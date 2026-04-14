@@ -1,6 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { useAuth } from "@/lib/auth-context";
 
 const Superposition     = dynamic(() => import("./components/algorithms/Superposition"),     { ssr: false });
 const Entanglement      = dynamic(() => import("./components/algorithms/Entanglement"),      { ssr: false });
@@ -27,7 +29,20 @@ const ALGORITHMS = [
 ];
 
 export default function Home() {
+  const { user, loading, logout } = useAuth();
+  const router = useRouter();
   const [selected, setSelected] = useState("superposition");
+
+  useEffect(() => {
+    if (!loading && !user) router.push("/login");
+  }, [user, loading, router]);
+
+  if (loading || !user) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-white/40 text-sm">Loading…</div>
+    </div>
+  );
+
   const algo = ALGORITHMS.find(a => a.key === selected)!;
   const AlgoComponent = algo.component;
 
@@ -40,7 +55,13 @@ export default function Home() {
             <span className="text-xl">⚛️</span>
             <span className="font-bold text-lg tracking-tight text-white">Quantra</span>
           </div>
-          <span className="text-xs text-white/30 hidden sm:block">Quantum Algorithm Playground</span>
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-white/30 hidden sm:block">{user.email}</span>
+            <button onClick={() => logout().then(() => router.push("/login"))}
+              className="text-xs text-white/40 hover:text-white transition-colors cursor-pointer">
+              Log out
+            </button>
+          </div>
         </div>
       </header>
 
