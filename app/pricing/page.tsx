@@ -2,10 +2,16 @@
 export const dynamic = "force-dynamic";
 import { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
 
 const YEARLY_DISCOUNT = 0.25;
 
 type Feature = { text: string; available: boolean };
+
+// Maps to env var suffix: STRIPE_PRICE_{priceKey}_MONTHLY / _YEARLY
+// null = free or enterprise (no Stripe checkout)
+type PriceKey = "PRO" | "RESEARCH" | null;
 
 interface Plan {
   name: string;
@@ -17,6 +23,7 @@ interface Plan {
   accentBg: string;
   ctaLabel: string;
   ctaStyle: "primary" | "outline" | "enterprise";
+  priceKey: PriceKey;
   sections: { heading: string; features: Feature[] }[];
 }
 
@@ -30,6 +37,7 @@ const PLANS: Plan[] = [
     accentBg: "rgba(255,255,255,0.06)",
     ctaLabel: "Get Started Free",
     ctaStyle: "outline",
+    priceKey: null,
     sections: [
       {
         heading: "DEMOS",
@@ -64,6 +72,7 @@ const PLANS: Plan[] = [
     accentBg: "rgba(124,58,237,0.18)",
     ctaLabel: "Start Pro Trial",
     ctaStyle: "primary",
+    priceKey: "PRO",
     sections: [
       {
         heading: "EVERYTHING IN FREE, PLUS",
@@ -97,6 +106,7 @@ const PLANS: Plan[] = [
     accentBg: "rgba(245,158,11,0.12)",
     ctaLabel: "Start Research Trial",
     ctaStyle: "outline",
+    priceKey: "RESEARCH",
     sections: [
       {
         heading: "EVERYTHING IN PRO, PLUS",
@@ -129,6 +139,7 @@ const PLANS: Plan[] = [
     accentBg: "rgba(52,211,153,0.1)",
     ctaLabel: "Contact Sales",
     ctaStyle: "enterprise",
+    priceKey: null,
     sections: [
       {
         heading: "EVERYTHING IN RESEARCH, PLUS",
@@ -154,12 +165,49 @@ const PLANS: Plan[] = [
 ];
 
 function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
+  const { user } = useAuth();
+  const router   = useRouter();
   const isEnterprise = plan.price === null;
+  const isFree       = plan.price === 0;
   const displayPrice = isEnterprise
     ? null
     : yearly
     ? Math.round((plan.price! * (1 - YEARLY_DISCOUNT)))
     : plan.price;
+  const [busy, setBusy]   = useState(false);
+  const [err, setErr]     = useState("");
+
+  async function handleCta() {
+    if (isFree) { router.push("/signup"); return; }
+    if (isEnterprise) { window.location.href = "mailto:sales@quantra.ai"; return; }
+    if (!plan.priceKey) return;
+
+    if (!user) { router.push("/login?next=/pricing"); return; }
+
+    setBusy(true); setErr("");
+    try {
+      const suffix  = yearly ? "YEARLY" : "MONTHLY";
+      // Price IDs must be exposed via NEXT_PUBLIC_ for client usage
+      const priceId = (process.env as Record<string, string | undefined>)[
+        `NEXT_PUBLIC_STRIPE_PRICE_${plan.priceKey}_${suffix}`
+      ] ?? "";
+
+      if (!priceId) { setErr("Stripe not configured yet."); setBusy(false); return; }
+
+      const idToken = await user.getIdToken();
+      const res     = await fetch("/api/stripe/checkout", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ priceId, idToken }),
+      });
+      const data = await res.json() as { url?: string; error?: string };
+      if (data.url) window.location.href = data.url;
+      else setErr(data.error ?? "Something went wrong.");
+    } catch {
+      setErr("Network error — please try again.");
+    }
+    setBusy(false);
+  }
 
   return (
     <div className="flex flex-col rounded-2xl overflow-hidden relative"
@@ -195,8 +243,9 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
         </div>
 
         {/* CTA */}
-        <Link href={plan.ctaStyle === "enterprise" ? "mailto:sales@quantra.ai" : "/signup"}
-          className="block text-center py-2.5 rounded-xl font-semibold text-sm mb-6 transition-all"
+        {err && <p className="text-red-400 text-xs mb-2 text-center">{err}</p>}
+        <button onClick={handleCta} disabled={busy}
+          className="block w-full text-center py-2.5 rounded-xl font-semibold text-sm mb-6 transition-all cursor-pointer disabled:opacity-50"
           style={
             plan.ctaStyle === "primary"
               ? { background: "linear-gradient(135deg,#7c3aed,#6d28d9)", color: "#fff" }
@@ -204,8 +253,8 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
               ? { background: "rgba(52,211,153,0.15)", color: "#34d399", border: "1px solid rgba(52,211,153,0.4)" }
               : { background: "rgba(255,255,255,0.08)", color: "#fff", border: "1px solid rgba(255,255,255,0.15)" }
           }>
-          {plan.ctaLabel}
-        </Link>
+          {busy ? "Redirecting…" : plan.ctaLabel}
+        </button>
 
         {/* Feature sections */}
         <div className="space-y-5 flex-1">
