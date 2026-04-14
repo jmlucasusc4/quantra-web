@@ -40,10 +40,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return unsub;
   }, []);
 
-  const login         = (e: string, p: string) => signInWithEmailAndPassword(auth!, e, p).then(() => {});
-  const signUp        = (e: string, p: string) => createUserWithEmailAndPassword(auth!, e, p).then(() => {});
-  const resetPassword = (e: string)            => sendPasswordResetEmail(auth!, e);
-  const logout        = ()                     => signOut(auth!);
+  const setSessionCookie = () => {
+    document.cookie = "quantra_session=1; path=/; max-age=2592000; SameSite=Lax";
+  };
+  const clearSessionCookie = () => {
+    document.cookie = "quantra_session=; path=/; max-age=0";
+  };
+
+  const login  = (e: string, p: string) =>
+    signInWithEmailAndPassword(auth!, e, p).then(() => { setSessionCookie(); });
+  const signUp = (e: string, p: string) =>
+    createUserWithEmailAndPassword(auth!, e, p).then(() => { setSessionCookie(); });
+  const resetPassword = (e: string) => sendPasswordResetEmail(auth!, e);
+  const logout        = ()          => signOut(auth!).then(() => { clearSessionCookie(); });
 
   return (
     <AuthContext.Provider value={{ user, loading, login, signUp, resetPassword, logout }}>
