@@ -30,6 +30,9 @@ export default function UpgradeGate({ requiredTier, children }: Props) {
   const [upgrading, setUpgrading] = useState(false);
   const [error, setError] = useState("");
 
+  // Free content never needs a subscription check — render immediately.
+  if (requiredTier === "free") return <>{children}</>;
+
   if (loading) return <div className="h-40 flex items-center justify-center"><span className="text-white/30 text-sm">Loading…</span></div>;
 
   if (tierAtLeast(sub.tier, requiredTier)) return <>{children}</>;

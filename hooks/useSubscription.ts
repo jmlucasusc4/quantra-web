@@ -28,10 +28,18 @@ export function useSubscription(): { sub: Subscription; loading: boolean } {
       return;
     }
 
+    // Safety net: if Firestore doesn't respond within 5 s, fall back to free tier
+    const timeout = setTimeout(() => {
+      console.warn("[useSubscription] Firestore timeout — defaulting to free tier");
+      setSub(DEFAULT);
+      setLoading(false);
+    }, 5000);
+
     const ref = doc(db, "users", user.uid);
     const unsub = onSnapshot(
       ref,
       snap => {
+        clearTimeout(timeout);
         if (snap.exists()) {
           const data = snap.data() as Partial<Subscription>;
           setSub({ tier: data.tier ?? "free", ...data });
@@ -41,13 +49,14 @@ export function useSubscription(): { sub: Subscription; loading: boolean } {
         setLoading(false);
       },
       err => {
+        clearTimeout(timeout);
         console.error("[useSubscription]", err);
         setSub(DEFAULT);
         setLoading(false);
       },
     );
 
-    return unsub;
+    return () => { clearTimeout(timeout); unsub(); };
   }, [user, authLoading]);
 
   return { sub, loading };
