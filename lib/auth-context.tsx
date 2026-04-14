@@ -27,7 +27,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!auth) { setLoading(false); return; }
-    const unsub = onAuthStateChanged(auth, u => { setUser(u); setLoading(false); });
+    const unsub = onAuthStateChanged(auth, u => {
+      setUser(u);
+      setLoading(false);
+      // Keep proxy middleware in sync — it reads this cookie to gate protected routes
+      if (u) {
+        document.cookie = "quantra_session=1; path=/; max-age=2592000; SameSite=Lax";
+      } else {
+        document.cookie = "quantra_session=; path=/; max-age=0";
+      }
+    });
     return unsub;
   }, []);
 
