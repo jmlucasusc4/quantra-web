@@ -26,14 +26,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!auth) { setLoading(false); return; }
     const unsub = onAuthStateChanged(auth, u => { setUser(u); setLoading(false); });
     return unsub;
   }, []);
 
-  const login         = (e: string, p: string) => signInWithEmailAndPassword(auth, e, p).then(() => {});
-  const signUp        = (e: string, p: string) => createUserWithEmailAndPassword(auth, e, p).then(() => {});
-  const resetPassword = (e: string)            => sendPasswordResetEmail(auth, e);
-  const logout        = ()                     => signOut(auth);
+  const login         = (e: string, p: string) => signInWithEmailAndPassword(auth!, e, p).then(() => {});
+  const signUp        = (e: string, p: string) => createUserWithEmailAndPassword(auth!, e, p).then(() => {});
+  const resetPassword = (e: string)            => sendPasswordResetEmail(auth!, e);
+  const logout        = ()                     => signOut(auth!);
 
   return (
     <AuthContext.Provider value={{ user, loading, login, signUp, resetPassword, logout }}>

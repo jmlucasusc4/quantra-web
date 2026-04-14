@@ -1,19 +1,20 @@
 "use client";
+export const dynamic = "force-dynamic";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 import { useAuth } from "@/lib/auth-context";
 
-const Superposition     = dynamic(() => import("./components/algorithms/Superposition"),     { ssr: false });
-const Entanglement      = dynamic(() => import("./components/algorithms/Entanglement"),      { ssr: false });
-const Grover            = dynamic(() => import("./components/algorithms/Grover"),            { ssr: false });
-const BB84              = dynamic(() => import("./components/algorithms/BB84"),              { ssr: false });
-const Teleportation     = dynamic(() => import("./components/algorithms/Teleportation"),     { ssr: false });
-const BernsteinVazirani = dynamic(() => import("./components/algorithms/BernsteinVazirani"), { ssr: false });
-const SpeedComparison   = dynamic(() => import("./components/algorithms/SpeedComparison"),   { ssr: false });
-const BlochSphere       = dynamic(() => import("./components/algorithms/BlochSphere"),       { ssr: false });
-const Shor              = dynamic(() => import("./components/algorithms/Shor"),              { ssr: false });
-const RiskAuditor       = dynamic(() => import("./components/algorithms/RiskAuditor"),       { ssr: false });
+const Superposition     = nextDynamic(() => import("./components/algorithms/Superposition"),     { ssr: false });
+const Entanglement      = nextDynamic(() => import("./components/algorithms/Entanglement"),      { ssr: false });
+const Grover            = nextDynamic(() => import("./components/algorithms/Grover"),            { ssr: false });
+const BB84              = nextDynamic(() => import("./components/algorithms/BB84"),              { ssr: false });
+const Teleportation     = nextDynamic(() => import("./components/algorithms/Teleportation"),     { ssr: false });
+const BernsteinVazirani = nextDynamic(() => import("./components/algorithms/BernsteinVazirani"), { ssr: false });
+const SpeedComparison   = nextDynamic(() => import("./components/algorithms/SpeedComparison"),   { ssr: false });
+const BlochSphere       = nextDynamic(() => import("./components/algorithms/BlochSphere"),       { ssr: false });
+const Shor              = nextDynamic(() => import("./components/algorithms/Shor"),              { ssr: false });
+const RiskAuditor       = nextDynamic(() => import("./components/algorithms/RiskAuditor"),       { ssr: false });
 
 const ALGORITHMS = [
   { key: "superposition",  label: "Superposition Demo",         description: "A single qubit in equal superposition via a Hadamard gate. Measurement yields |0⟩ or |1⟩ with ~50% probability each.", component: Superposition },
