@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 
-const YEARLY_DISCOUNT = 0.25;
+// Pricing: quarterly is the default billing cadence; yearly saves ~25%
+const PLANS_QUARTERLY = { PRO: 79, RESEARCH: 249 };
+const PLANS_YEARLY    = { PRO: 276, RESEARCH: 948 };
 
 type Feature = { text: string; available: boolean };
 
-// Maps to env var suffix: STRIPE_PRICE_{priceKey}_MONTHLY / _YEARLY
+// Maps to env var suffix: STRIPE_PRICE_{priceKey}_QUARTERLY / _YEARLY
 // null = free or enterprise (no Stripe checkout)
 type PriceKey = "PRO" | "RESEARCH" | null;
 
@@ -64,8 +66,8 @@ const PLANS: Plan[] = [
   },
   {
     name: "Pro",
-    price: 29,
-    period: "mo",
+    price: null, // dynamic — set by toggle
+    period: "",
     tagline: "For security professionals who need the full simulation suite.",
     badge: "Most Popular",
     accentColor: "#a855f7",
@@ -99,8 +101,8 @@ const PLANS: Plan[] = [
   },
   {
     name: "Research",
-    price: 99,
-    period: "mo",
+    price: null, // dynamic — set by toggle
+    period: "",
     tagline: "Advanced algorithms and API access for teams and researchers.",
     accentColor: "#f59e0b",
     accentBg: "rgba(245,158,11,0.12)",
@@ -167,15 +169,25 @@ const PLANS: Plan[] = [
 function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
   const { user } = useAuth();
   const router   = useRouter();
-  const isEnterprise = plan.price === null;
-  const isFree       = plan.price === 0;
-  const displayPrice = isEnterprise
-    ? null
-    : yearly
-    ? Math.round((plan.price! * (1 - YEARLY_DISCOUNT)))
-    : plan.price;
-  const [busy, setBusy]   = useState(false);
-  const [err, setErr]     = useState("");
+
+  const isFree       = plan.name === "Free";
+  const isEnterprise = plan.name === "Enterprise";
+  const isPaid       = !isFree && !isEnterprise;
+
+  // Resolve display price and period label from priceKey
+  const quarterlyPrice = plan.priceKey ? PLANS_QUARTERLY[plan.priceKey] : null;
+  const yearlyPrice    = plan.priceKey ? PLANS_YEARLY[plan.priceKey]    : null;
+  const displayPrice   = isPaid ? (yearly ? yearlyPrice : quarterlyPrice) : 0;
+  const periodLabel    = isPaid ? (yearly ? "/ year" : "/ quarter") : "forever";
+  // Show per-month equivalent under the price
+  const perMonth       = isPaid
+    ? yearly
+      ? `$${Math.round(yearlyPrice! / 12)}/mo billed annually`
+      : `$${Math.round(quarterlyPrice! / 3)}/mo billed quarterly`
+    : null;
+
+  const [busy, setBusy] = useState(false);
+  const [err, setErr]   = useState("");
 
   async function handleCta() {
     if (isFree) { router.push("/signup"); return; }
@@ -186,8 +198,7 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
 
     setBusy(true); setErr("");
     try {
-      const suffix  = yearly ? "YEARLY" : "MONTHLY";
-      // Price IDs must be exposed via NEXT_PUBLIC_ for client usage
+      const suffix  = yearly ? "YEARLY" : "QUARTERLY";
       const priceId = (process.env as Record<string, string | undefined>)[
         `NEXT_PUBLIC_STRIPE_PRICE_${plan.priceKey}_${suffix}`
       ] ?? "";
@@ -229,16 +240,17 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
         {/* Header */}
         <div className="mb-5">
           <h2 className="text-lg font-bold text-white mb-1">{plan.name}</h2>
-          <div className="flex items-baseline gap-1 mb-2">
+          <div className="flex items-baseline gap-1 mb-1">
             {isEnterprise ? (
               <span className="text-2xl font-bold" style={{ color: plan.accentColor }}>Custom</span>
             ) : (
               <>
                 <span className="text-3xl font-bold text-white">${displayPrice}</span>
-                <span className="text-white/40 text-sm">/{plan.period}</span>
+                <span className="text-white/40 text-sm">{periodLabel}</span>
               </>
             )}
           </div>
+          {perMonth && <p className="text-xs text-white/30 mb-2">{perMonth}</p>}
           <p className="text-sm text-white/50 leading-snug">{plan.tagline}</p>
         </div>
 
@@ -311,9 +323,9 @@ export default function PricingPage() {
           <h1 className="text-3xl font-bold text-white">Simple, transparent pricing</h1>
           <p className="text-white/50">From learning fundamentals to enterprise-grade quantum risk auditing.</p>
 
-          {/* Monthly / Yearly toggle */}
+          {/* Quarterly / Yearly toggle */}
           <div className="flex items-center justify-center gap-3 mt-4">
-            <span className={`text-sm ${!yearly ? "text-white" : "text-white/40"}`}>Monthly</span>
+            <span className={`text-sm ${!yearly ? "text-white" : "text-white/40"}`}>Quarterly</span>
             <button onClick={() => setYearly(y => !y)}
               className="w-12 h-6 rounded-full relative transition-colors cursor-pointer"
               style={{ background: yearly ? "#7c3aed" : "rgba(255,255,255,0.15)" }}>

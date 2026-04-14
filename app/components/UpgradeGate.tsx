@@ -39,10 +39,10 @@ export default function UpgradeGate({ requiredTier, children }: Props) {
     setUpgrading(true);
     setError("");
     try {
-      // Map required tier to its cheapest (monthly) price ID
+      // Map required tier to its quarterly price ID (default billing cadence)
       const PRICE_MAP: Record<string, string> = {
-        pro:      process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY      ?? "",
-        research: process.env.NEXT_PUBLIC_STRIPE_PRICE_RESEARCH_MONTHLY ?? "",
+        pro:      process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_QUARTERLY      ?? "",
+        research: process.env.NEXT_PUBLIC_STRIPE_PRICE_RESEARCH_QUARTERLY ?? "",
       };
       const priceId = PRICE_MAP[requiredTier];
       if (!priceId) {
