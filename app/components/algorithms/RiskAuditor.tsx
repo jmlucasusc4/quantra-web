@@ -1,0 +1,92 @@
+"use client";
+import { useState } from "react";
+
+type Risk = "broken" | "weakened" | "safe";
+interface Algo { name: string; type: string; risk: Risk; reason: string; inUse: boolean; }
+
+const INITIAL: Algo[] = [
+  { name: "RSA-2048",          type: "Asymmetric",   risk: "broken",   reason: "Broken by Shor's in polynomial time",        inUse: false },
+  { name: "RSA-4096",          type: "Asymmetric",   risk: "broken",   reason: "Broken by Shor's in polynomial time",        inUse: false },
+  { name: "ECC / ECDSA",       type: "Asymmetric",   risk: "broken",   reason: "Discrete log broken by Shor's",              inUse: false },
+  { name: "Diffie-Hellman",    type: "Key Exchange", risk: "broken",   reason: "Discrete log broken by Shor's",              inUse: false },
+  { name: "AES-128",           type: "Symmetric",    risk: "weakened", reason: "Grover's halves key strength → 64-bit",      inUse: false },
+  { name: "AES-256",           type: "Symmetric",    risk: "safe",     reason: "Reduces to 128-bit effective — still secure", inUse: false },
+  { name: "SHA-256",           type: "Hash",         risk: "weakened", reason: "Collision resistance weakened",              inUse: false },
+  { name: "SHA-512",           type: "Hash",         risk: "safe",     reason: "Sufficient margin against Grover's",         inUse: false },
+  { name: "CRYSTALS-Kyber",    type: "PQC KEM",      risk: "safe",     reason: "NIST-selected post-quantum standard",        inUse: false },
+  { name: "CRYSTALS-Dilithium",type: "PQC Sig",      risk: "safe",     reason: "NIST-selected post-quantum standard",        inUse: false },
+  { name: "SPHINCS+",          type: "PQC Sig",      risk: "safe",     reason: "Hash-based, quantum-resistant",              inUse: false },
+  { name: "FALCON",            type: "PQC Sig",      risk: "safe",     reason: "NIST-selected post-quantum standard",        inUse: false },
+];
+
+const GROUPS = ["Asymmetric", "Key Exchange", "Symmetric", "Hash", "PQC KEM", "PQC Sig"];
+
+const RISK_COLOR: Record<Risk, string> = {
+  broken: "#f87171", weakened: "#fb923c", safe: "#34d399",
+};
+const RISK_LABEL: Record<Risk, string> = {
+  broken: "BROKEN", weakened: "WEAKENED", safe: "SAFE",
+};
+
+export default function RiskAuditor() {
+  const [algos, setAlgos] = useState<Algo[]>(INITIAL);
+
+  function toggle(name: string) {
+    setAlgos(a => a.map(x => x.name === name ? { ...x, inUse: !x.inUse } : x));
+  }
+
+  const inUse = algos.filter(a => a.inUse);
+  const score = inUse.filter(a => a.risk === "broken").length * 3 + inUse.filter(a => a.risk === "weakened").length;
+  const [riskLabel, riskColor] =
+    score === 0 ? ["✅ Quantum Safe",  "#34d399"] :
+    score <= 2  ? ["⚠️ Low Risk",       "#fbbf24"] :
+    score <= 5  ? ["🔶 Medium Risk",    "#fb923c"] :
+                  ["🚨 High Risk",      "#f87171"];
+
+  return (
+    <div className="space-y-4">
+      {inUse.length > 0 && (
+        <div className="p-3 rounded-xl border" style={{ borderColor: riskColor + "44", background: riskColor + "11" }}>
+          <div className="flex justify-between">
+            <div>
+              <p className="text-xs text-white/40">Risk Level</p>
+              <p className="font-bold" style={{ color: riskColor }}>{riskLabel}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-white/40">In use</p>
+              <p className="font-semibold text-white">{inUse.length} algorithms</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {GROUPS.map(group => {
+        const groupAlgos = algos.filter(a => a.type === group);
+        return (
+          <div key={group}>
+            <p className="text-xs text-white/40 tracking-widest uppercase mb-2">{group}</p>
+            <div className="rounded-xl overflow-hidden border border-white/5">
+              {groupAlgos.map((algo, i) => (
+                <div key={algo.name} className={`flex items-center gap-3 px-3 py-3 ${i > 0 ? "border-t border-white/5" : ""} bg-white/2 hover:bg-white/5 transition-colors`}>
+                  <button onClick={() => toggle(algo.name)}
+                    className={`w-10 h-5 rounded-full transition-colors shrink-0 relative cursor-pointer ${algo.inUse ? "" : "bg-white/20"}`}
+                    style={algo.inUse ? { background: RISK_COLOR[algo.risk] } : {}}>
+                    <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${algo.inUse ? "translate-x-5" : "translate-x-0.5"}`} />
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-white">{algo.name}</p>
+                    <p className="text-xs text-white/40 truncate">{algo.reason}</p>
+                  </div>
+                  <span className="text-xs font-bold px-2 py-1 rounded shrink-0"
+                    style={{ color: RISK_COLOR[algo.risk], background: RISK_COLOR[algo.risk] + "22" }}>
+                    {RISK_LABEL[algo.risk]}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
