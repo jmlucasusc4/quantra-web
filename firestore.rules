@@ -5,11 +5,17 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
 
-      // Clients may update progress fields only.
-      // Stripe-managed fields (tier, stripeCustomerId, etc.) are written
-      // exclusively by the server-side webhook via Admin SDK, which bypasses
-      // these rules — so there is no risk of clients elevating their tier.
-      allow write: if request.auth != null
+      // First-time signup (create) may include tier:'free' only.
+      // Updates may not touch Stripe-managed fields — those are written
+      // exclusively by the server-side webhook via Admin SDK.
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.tier == 'free'
+        && !request.resource.data.keys().hasAny([
+            'stripeCustomerId', 'stripeSubscriptionId',
+            'stripeStatus', 'stripePriceId', 'currentPeriodEnd'
+          ]);
+      allow update: if request.auth != null
         && request.auth.uid == uid
         && !request.resource.data.keys().hasAny([
             'tier', 'stripeCustomerId', 'stripeSubscriptionId',

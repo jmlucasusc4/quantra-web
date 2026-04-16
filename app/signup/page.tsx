@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { GoogleAuthButton } from "@/app/components/auth/GoogleAuthButton";
 
 const RULES = [
   { label: "At least 8 characters",         check: (p: string) => p.length >= 8 },
@@ -99,6 +100,14 @@ export default function SignUpPage() {
             {loading ? "Creating account…" : "Create Account"}
           </button>
         </form>
+
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-white/10" />
+          <span className="text-xs text-white/30">or</span>
+          <div className="flex-1 h-px bg-white/10" />
+        </div>
+
+        <GoogleAuthButton mode="signup" />
 
         <p className="text-center text-sm text-white/40">
           Already have an account?{" "}

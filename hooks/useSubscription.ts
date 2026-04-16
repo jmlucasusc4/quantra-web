@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
-import type { Tier } from "@/lib/stripe";
+import { tierAtLeast, type Tier } from "@/lib/stripe";
 
 export interface Subscription {
   tier: Tier;
@@ -15,7 +15,7 @@ export interface Subscription {
 
 const DEFAULT: Subscription = { tier: "free" };
 
-export function useSubscription(): { sub: Subscription; loading: boolean } {
+export function useSubscription(): { sub: Subscription; loading: boolean; tier: Tier; hasAccess: (required: Tier) => boolean } {
   const { user, loading: authLoading } = useAuth();
   const [sub, setSub]       = useState<Subscription>(DEFAULT);
   const [loading, setLoading] = useState(true);
@@ -59,5 +59,7 @@ export function useSubscription(): { sub: Subscription; loading: boolean } {
     return () => { clearTimeout(timeout); unsub(); };
   }, [user, authLoading]);
 
-  return { sub, loading };
+  const tier = sub.tier;
+  const hasAccess = (required: Tier) => tierAtLeast(tier, required);
+  return { sub, loading, tier, hasAccess };
 }

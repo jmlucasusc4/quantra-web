@@ -6,6 +6,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useProgress } from "@/hooks/useProgress";
 import { useActivity, activityLabel, relativeTime } from "@/hooks/useActivity";
 import type { Tier } from "@/lib/stripe";
+import { EmptyDashboardState } from "@/app/components/dashboard/EmptyState";
 
 // ── Tier presentation ──────────────────────────────────────────────────────────
 
@@ -147,7 +148,13 @@ export default function DashboardPage() {
           </div>
         </Card>
 
-        {/* ── Stat cards ────────────────────────────────────────────── */}
+        {/* ── Zero state ───────────────────────────────────────────── */}
+        {!progressLoading && completedDemos.length === 0 && (
+          <EmptyDashboardState />
+        )}
+
+        {/* ── Stat cards (only when demos have been run) ────────────── */}
+        {(progressLoading || completedDemos.length > 0) && (<>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <StatCard
             label="Demos completed"
@@ -236,6 +243,8 @@ export default function DashboardPage() {
             </ul>
           )}
         </Card>
+
+        </>)}
 
       </main>
     </div>

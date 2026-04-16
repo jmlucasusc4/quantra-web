@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { GoogleAuthButton } from "@/app/components/auth/GoogleAuthButton";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -62,6 +63,14 @@ export default function LoginPage() {
             {loading ? "Logging in…" : "Log In"}
           </button>
         </form>
+
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-white/10" />
+          <span className="text-xs text-white/30">or</span>
+          <div className="flex-1 h-px bg-white/10" />
+        </div>
+
+        <GoogleAuthButton mode="signin" />
 
         <p className="text-center text-sm text-white/40">
           No account?{" "}

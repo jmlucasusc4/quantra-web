@@ -1,12 +1,34 @@
 "use client";
 export const dynamic = "force-dynamic";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import nextDynamic from "next/dynamic";
 import { useAuth } from "@/lib/auth-context";
 import { useSubscription } from "@/hooks/useSubscription";
 import UpgradeGate from "./components/UpgradeGate";
 import { tierAtLeast, type Tier } from "@/lib/stripe";
+import { DemoSidebar } from "./components/sidebar/DemoSidebar";
+
+// Map DemoSidebar slugs → page ALGORITHMS keys
+const SLUG_TO_KEY: Record<string, string> = {
+  'superposition':        'superposition',
+  'entanglement':         'entanglement',
+  'bloch-sphere':         'bloch',
+  'deutsch-jozsa':        'deutsch',
+  'qrng':                 'qrng',
+  'classical-vs-quantum': 'speed',
+  'grovers-search':       'grover',
+  'bb84-protocol':        'bb84',
+  'crystals-kyber':       'kyber',
+  'bernstein-vazirani':   'bv',
+  'harvest-now':          'harvest',
+  'circuit-builder':      'circuit',
+  'quantum-risk-auditor': 'risk',
+  'shors-algorithm':      'shor',
+  'quantum-teleportation':'teleportation',
+  'simons-algorithm':     'simon',
+};
+const KEY_TO_SLUG = Object.fromEntries(Object.entries(SLUG_TO_KEY).map(([s, k]) => [k, s]));
 
 const Superposition     = nextDynamic(() => import("./components/algorithms/Superposition"),     { ssr: false });
 const Entanglement      = nextDynamic(() => import("./components/algorithms/Entanglement"),      { ssr: false });
@@ -142,7 +164,10 @@ export default function Home() {
   const { user, loading, logout } = useAuth();
   const { sub } = useSubscription();
   const router = useRouter();
-  const [selected, setSelected] = useState("superposition");
+  const searchParams = useSearchParams();
+  const initialDemo = searchParams.get('demo');
+  const initialKey = initialDemo ? (SLUG_TO_KEY[initialDemo] ?? 'superposition') : 'superposition';
+  const [selected, setSelected] = useState(initialKey);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -178,35 +203,14 @@ export default function Home() {
 
       <div className="max-w-5xl mx-auto w-full px-4 py-8 flex-1 flex flex-col lg:flex-row gap-6">
         {/* Sidebar */}
-        <aside className="lg:w-64 shrink-0">
-          <nav className="glass p-2 space-y-1 lg:sticky lg:top-24">
-            {ALGORITHMS.map(a => {
-              const ds = DIFF_STYLE[a.difficulty];
-              const isActive = selected === a.key;
-              const locked = !tierAtLeast(sub.tier, a.requiredTier);
-              return (
-                <button
-                  key={a.key}
-                  onClick={() => setSelected(a.key)}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all cursor-pointer ${
-                    isActive ? "text-white font-semibold" : "text-white/50 hover:text-white hover:bg-white/5"
-                  }`}
-                  style={isActive ? { background: "rgba(124,58,237,0.5)", border: "1px solid rgba(168,85,247,0.4)" } : {}}
-                >
-                  <span className="flex items-center justify-between gap-2">
-                    <span className="flex items-center gap-1.5 truncate">
-                      {locked && <span className="text-[10px] opacity-40">🔒</span>}
-                      <span className="truncate">{a.label}</span>
-                    </span>
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0"
-                      style={{ color: ds.color, background: ds.bg }}>
-                      {a.difficulty}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </nav>
+        <aside className="lg:w-64 shrink-0 lg:sticky lg:top-24 self-start">
+          <DemoSidebar
+            activeSlug={KEY_TO_SLUG[selected]}
+            onSelect={slug => {
+              const key = SLUG_TO_KEY[slug];
+              if (key) setSelected(key);
+            }}
+          />
         </aside>
 
         {/* Main content */}
