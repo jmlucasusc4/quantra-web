@@ -1,6 +1,6 @@
 "use client";
 export const dynamic = "force-dynamic";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import nextDynamic from "next/dynamic";
 import { useAuth } from "@/lib/auth-context";
@@ -182,6 +182,14 @@ const ALGORITHMS: {
 ];
 
 export default function Home() {
+  return (
+    <Suspense>
+      <HomeInner />
+    </Suspense>
+  )
+}
+
+function HomeInner() {
   const { user, loading, logout } = useAuth();
   const { sub } = useSubscription();
   const router = useRouter();
