@@ -2,16 +2,32 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Users can only read/write their own document
     match /users/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
 
-      // Clients cannot write tier or Stripe fields directly —
-      // those are written exclusively by the server-side webhook
-      allow write: if false;
+      // Clients may update progress fields only.
+      // Stripe-managed fields (tier, stripeCustomerId, etc.) are written
+      // exclusively by the server-side webhook via Admin SDK, which bypasses
+      // these rules — so there is no risk of clients elevating their tier.
+      allow write: if request.auth != null
+        && request.auth.uid == uid
+        && !request.resource.data.keys().hasAny([
+            'tier', 'stripeCustomerId', 'stripeSubscriptionId',
+            'stripeStatus', 'stripePriceId', 'currentPeriodEnd'
+          ]);
+
+      match /activity/{activityId} {
+        allow read:   if request.auth != null && request.auth.uid == uid;
+        allow create: if request.auth != null && request.auth.uid == uid;
+        allow update, delete: if false;  // activity is append-only
+      }
+
+      match /results/{demoSlug} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
     }
 
-    // Deny everything else by default
+    // Deny everything else
     match /{document=**} {
       allow read, write: if false;
     }

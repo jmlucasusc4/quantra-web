@@ -23,7 +23,12 @@ async function upsertSubscription(
         stripeSubscriptionId: subscription.id,
         stripeStatus:         subscription.status,
         stripePriceId:        priceId,
-        currentPeriodEnd:     (subscription as unknown as { current_period_end: number }).current_period_end,
+        currentPeriodEnd:     (() => {
+          // current_period_end was removed in API version 2026-03-25.dahlia;
+          // it now lives on latest_invoice.period_end (when expanded).
+          const inv = (subscription as unknown as { latest_invoice?: { period_end?: number } | null }).latest_invoice;
+          return inv?.period_end ?? subscription.billing_cycle_anchor ?? null;
+        })(),
         updatedAt:            Date.now(),
       },
       { merge: true },
@@ -71,16 +76,20 @@ export async function POST(req: NextRequest) {
 
         const sub = await stripe.subscriptions.retrieve(
           typeof session.subscription === "string" ? session.subscription : session.subscription.id,
+          { expand: ["latest_invoice"] },
         );
         await upsertSubscription(uid, sub, customerId);
         break;
       }
 
       case "customer.subscription.updated": {
-        const sub        = event.data.object as Stripe.Subscription;
-        const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
-        const uid        = await resolveUid(sub, customerId);
-        if (uid) await upsertSubscription(uid, sub, customerId);
+        const raw        = event.data.object as Stripe.Subscription;
+        const customerId = typeof raw.customer === "string" ? raw.customer : raw.customer.id;
+        const uid        = await resolveUid(raw, customerId);
+        if (uid) {
+          const sub = await stripe.subscriptions.retrieve(raw.id, { expand: ["latest_invoice"] });
+          await upsertSubscription(uid, sub, customerId);
+        }
         break;
       }
 

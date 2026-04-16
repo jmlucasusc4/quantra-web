@@ -1,120 +1,98 @@
-"use client";
-import { useEffect, useState, useCallback } from "react";
-import { doc, onSnapshot, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { useAuth } from "@/lib/auth-context";
+'use client'
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+import { useEffect, useState, useCallback } from 'react'
+import { useAuthState } from 'react-firebase-hooks/auth'
+import { doc, updateDoc, arrayUnion, arrayRemove, onSnapshot, increment } from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase'
+import { computeReadiness, ReadinessResult } from '@/lib/readiness'
 
-export interface Progress {
-  completedDemos: string[];   // algorithm keys that have been completed
-  simsRunTotal:   number;
-  simsRunToday:   number;
-  simsRunDate:    string;     // "YYYY-MM-DD" — resets simsRunToday when it changes
-  keysGenerated:  number;     // cumulative BB84 / QRNG keys produced
+interface ProgressState {
+  completedDemos: string[]
+  readiness: ReadinessResult
+  loading: boolean
+  markComplete: (slug: string, demoName: string) => Promise<void>
+  markIncomplete: (slug: string) => Promise<void>
+  isComplete: (slug: string) => boolean
 }
 
-const DEFAULT: Progress = {
-  completedDemos: [],
-  simsRunTotal:   0,
-  simsRunToday:   0,
-  simsRunDate:    "",
-  keysGenerated:  0,
-};
-
-function todayISO() {
-  return new Date().toISOString().split("T")[0];
+const DEFAULT_READINESS: ReadinessResult = {
+  total: 0,
+  breakdown: { algorithmsScore: 0, cryptoScore: 0, riskScore: 0, pqcScore: 0 },
+  level: 'novice',
+  nextRecommended: 'superposition',
 }
 
-// ── Hook ──────────────────────────────────────────────────────────────────────
-
-export function useProgress() {
-  const { user, loading: authLoading } = useAuth();
-  const [progress, setProgress] = useState<Progress>(DEFAULT);
-  const [loading, setLoading]   = useState(true);
+export function useProgress(): ProgressState {
+  const [user] = useAuthState(auth)
+  const [completedDemos, setCompletedDemos] = useState<string[]>([])
+  const [readiness, setReadiness] = useState<ReadinessResult>(DEFAULT_READINESS)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user || !db) {
-      setProgress(DEFAULT);
-      setLoading(false);
-      return;
-    }
+    if (!user) { setLoading(false); return }
 
-    const ref = doc(db, "users", user.uid);
-    const unsub = onSnapshot(
-      ref,
-      snap => {
-        if (snap.exists()) {
-          const d = snap.data();
-          setProgress({
-            completedDemos: d.completedDemos ?? [],
-            simsRunTotal:   d.simsRunTotal   ?? 0,
-            simsRunToday:   d.simsRunToday   ?? 0,
-            simsRunDate:    d.simsRunDate    ?? "",
-            keysGenerated:  d.keysGenerated  ?? 0,
-          });
-        } else {
-          setProgress(DEFAULT);
-        }
-        setLoading(false);
-      },
-      err => {
-        console.error("[useProgress]", err);
-        setProgress(DEFAULT);
-        setLoading(false);
-      },
-    );
+    const unsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
+      const data = snap.data()
+      const demos: string[] = data?.completedDemos ?? []
+      setCompletedDemos(demos)
+      setReadiness(computeReadiness(demos))
+      setLoading(false)
+    })
 
-    return unsub;
-  }, [user, authLoading]);
+    return () => unsub()
+  }, [user])
 
-  // ── Mutations ──────────────────────────────────────────────────────────────
+  const markComplete = useCallback(async (slug: string, demoName: string) => {
+    if (!user || completedDemos.includes(slug)) return
 
-  /** Mark a demo as completed. Idempotent — arrayUnion won't duplicate. */
-  const markCompleted = useCallback(async (demoKey: string) => {
-    if (!user || !db) return;
-    const ref = doc(db, "users", user.uid);
-    await setDoc(ref, { completedDemos: arrayUnion(demoKey) }, { merge: true });
-  }, [user]);
+    const userRef = doc(db, 'users', user.uid)
+    const newCompleted = [...completedDemos, slug]
+    const newReadiness = computeReadiness(newCompleted)
 
-  /** Increment both the all-time and today counters (resets today counter on new day). */
-  const recordSimRun = useCallback(async () => {
-    if (!user || !db) return;
-    const today   = todayISO();
-    const isToday = progress.simsRunDate === today;
-    const ref     = doc(db, "users", user.uid);
-    await setDoc(
-      ref,
-      {
-        simsRunTotal: (progress.simsRunTotal ?? 0) + 1,
-        simsRunToday: isToday ? (progress.simsRunToday ?? 0) + 1 : 1,
-        simsRunDate:  today,
-      },
-      { merge: true },
-    );
-  }, [user, progress]);
+    // Optimistic update
+    setCompletedDemos(newCompleted)
+    setReadiness(newReadiness)
 
-  /** Accumulate QRNG / BB84 key count. */
-  const recordKeysGenerated = useCallback(async (count: number) => {
-    if (!user || !db) return;
-    const ref = doc(db, "users", user.uid);
-    await setDoc(
-      ref,
-      { keysGenerated: (progress.keysGenerated ?? 0) + count },
-      { merge: true },
-    );
-  }, [user, progress]);
+    await updateDoc(userRef, {
+      completedDemos: arrayUnion(slug),
+      totalSimsRun: increment(1),
+      readinessScore: newReadiness.total,
+      readinessBreakdown: newReadiness.breakdown,
+      updatedAt: Date.now(),
+    })
 
-  const fractionCompleted = (total: number) =>
-    total > 0 ? progress.completedDemos.length / total : 0;
+    // Append to activity feed
+    const { addDoc, collection, serverTimestamp } = await import('firebase/firestore')
+    await addDoc(collection(db, 'users', user.uid, 'activity'), {
+      type: 'demo_completed',
+      demoSlug: slug,
+      demoName,
+      createdAt: Date.now(),
+    })
+  }, [user, completedDemos])
 
-  return {
-    progress,
-    loading,
-    markCompleted,
-    recordSimRun,
-    recordKeysGenerated,
-    fractionCompleted,
-  };
+  const markIncomplete = useCallback(async (slug: string) => {
+    if (!user) return
+
+    const userRef = doc(db, 'users', user.uid)
+    const newCompleted = completedDemos.filter(d => d !== slug)
+    const newReadiness = computeReadiness(newCompleted)
+
+    setCompletedDemos(newCompleted)
+    setReadiness(newReadiness)
+
+    await updateDoc(userRef, {
+      completedDemos: arrayRemove(slug),
+      readinessScore: newReadiness.total,
+      readinessBreakdown: newReadiness.breakdown,
+      updatedAt: Date.now(),
+    })
+  }, [user, completedDemos])
+
+  const isComplete = useCallback(
+    (slug: string) => completedDemos.includes(slug),
+    [completedDemos]
+  )
+
+  return { completedDemos, readiness, loading, markComplete, markIncomplete, isComplete }
 }

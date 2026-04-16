@@ -11,15 +11,12 @@ const firebaseConfig = {
   appId:             process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Only initialize Firebase on the client — never during SSR/static generation
-let app: FirebaseApp | undefined;
-let auth: Auth | undefined;
-let db: Firestore | undefined;
+// Initialize once — getApps() guard makes this safe across hot-reloads.
+// firebase/* packages are client-only; this module is never imported by
+// server-only code (route handlers use firebase-admin instead).
+const app: FirebaseApp = getApps().length === 0
+  ? initializeApp(firebaseConfig)
+  : getApps()[0];
 
-if (typeof window !== "undefined") {
-  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-  auth = getAuth(app);
-  db   = getFirestore(app);
-}
-
-export { auth, db };
+export const auth: Auth      = getAuth(app);
+export const db:   Firestore = getFirestore(app);
