@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
-import { GoogleAuthButton } from "@/app/components/auth/GoogleAuthButton";
+import { SocialAuthButton } from "@/app/components/auth/SocialAuthButton";
 
 const RULES = [
   { label: "At least 8 characters",         check: (p: string) => p.length >= 8 },
@@ -107,7 +107,12 @@ export default function SignUpPage() {
           <div className="flex-1 h-px bg-white/10" />
         </div>
 
-        <GoogleAuthButton mode="signup" />
+        <div className="space-y-2">
+          <SocialAuthButton provider="google"    mode="signup" />
+          <SocialAuthButton provider="github"    mode="signup" />
+          <SocialAuthButton provider="microsoft" mode="signup" />
+          <SocialAuthButton provider="twitter"   mode="signup" />
+        </div>
 
         <p className="text-center text-sm text-white/40">
           Already have an account?{" "}

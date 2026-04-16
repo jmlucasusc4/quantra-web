@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
-import { GoogleAuthButton } from "@/app/components/auth/GoogleAuthButton";
+import { SocialAuthButton } from "@/app/components/auth/SocialAuthButton";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -70,7 +70,12 @@ export default function LoginPage() {
           <div className="flex-1 h-px bg-white/10" />
         </div>
 
-        <GoogleAuthButton mode="signin" />
+        <div className="space-y-2">
+          <SocialAuthButton provider="google"    mode="signin" />
+          <SocialAuthButton provider="github"    mode="signin" />
+          <SocialAuthButton provider="microsoft" mode="signin" />
+          <SocialAuthButton provider="twitter"   mode="signin" />
+        </div>
 
         <p className="text-center text-sm text-white/40">
           No account?{" "}
