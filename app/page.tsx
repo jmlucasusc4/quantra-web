@@ -8,6 +8,27 @@ import { useSubscription } from "@/hooks/useSubscription";
 import UpgradeGate from "./components/UpgradeGate";
 import { tierAtLeast, type Tier } from "@/lib/stripe";
 import { DemoSidebar } from "./components/sidebar/DemoSidebar";
+import { QuantumTooltip } from "./components/ui/QuantumTooltip";
+
+// Auto-wrap known quantum terms in a string with tooltips
+const TOOLTIP_TERMS = [
+  'hadamard gate', 'superposition', 'entanglement', 'qubit', 'bb84', 'rsa',
+]
+function WithTooltips({ text }: { text: string }) {
+  const pattern = new RegExp(`(${TOOLTIP_TERMS.join('|')})`, 'gi')
+  const parts = text.split(pattern)
+  return (
+    <>
+      {parts.map((part, i) => {
+        const lower = part.toLowerCase()
+        if (TOOLTIP_TERMS.includes(lower)) {
+          return <QuantumTooltip key={i} term={lower}>{part}</QuantumTooltip>
+        }
+        return part
+      })}
+    </>
+  )
+}
 
 // Map DemoSidebar slugs → page ALGORITHMS keys
 const SLUG_TO_KEY: Record<string, string> = {
@@ -201,9 +222,9 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto w-full px-4 py-8 flex-1 flex flex-col lg:flex-row gap-6">
+      <div className="quantra-layout max-w-5xl mx-auto w-full px-4 py-8 flex-1 flex flex-col lg:flex-row gap-6">
         {/* Sidebar */}
-        <aside className="lg:w-64 shrink-0 lg:sticky lg:top-24 self-start">
+        <aside className="quantra-sidebar lg:w-64 shrink-0 lg:sticky lg:top-24 self-start">
           <DemoSidebar
             activeSlug={KEY_TO_SLUG[selected]}
             onSelect={slug => {
@@ -236,7 +257,7 @@ export default function Home() {
                 Why This Matters
               </p>
               <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
-                {algo.whyItMatters}
+                <WithTooltips text={algo.whyItMatters} />
               </p>
             </div>
           </div>

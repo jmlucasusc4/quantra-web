@@ -1,0 +1,155 @@
+/* app/mobile.css */
+/* Handles the sidebar + demo panel layout on mobile */
+
+/* ── Base layout (desktop first) ── */
+.quantra-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+  padding: 24px;
+  min-height: calc(100vh - 60px);
+  align-items: start;
+}
+
+.quantra-sidebar {
+  position: sticky;
+  top: 24px;
+}
+
+/* ── Tablet (≤900px) ── */
+@media (max-width: 900px) {
+  .quantra-layout {
+    grid-template-columns: 200px 1fr;
+    gap: 12px;
+    padding: 16px;
+  }
+}
+
+/* ── Mobile (≤640px) ── */
+@media (max-width: 640px) {
+  /* Stack sidebar above demo panel */
+  .quantra-layout {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  /* Sidebar becomes horizontal scrolling tabs on mobile */
+  .quantra-sidebar {
+    position: static;
+    overflow: hidden;
+  }
+
+  .sidebar-demo-list {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .sidebar-demo-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Each demo item becomes a pill on mobile */
+  .sidebar-demo-item {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 8px 14px !important;
+    border-radius: 20px !important;
+  }
+
+  /* Section labels hidden on mobile (space is tight) */
+  .sidebar-section-label {
+    display: none;
+  }
+
+  /* Demo panel fills full width */
+  .demo-panel {
+    min-height: 400px;
+  }
+
+  /* Stat cards — 2 column on mobile */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Pricing grid — single column on mobile */
+  .pricing-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Dashboard readiness breakdown — stack */
+  .readiness-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Result card share buttons — stack */
+  .share-row {
+    flex-direction: column;
+  }
+
+  /* Nav header — hide email, show just avatar */
+  .nav-email {
+    display: none;
+  }
+
+  /* Onboarding modal — full screen on mobile */
+  .onboarding-modal {
+    border-radius: 0 !important;
+    padding: 32px 20px !important;
+    min-height: 100vh;
+    max-width: 100% !important;
+  }
+}
+
+/* ── Bottom tab nav (mobile only) ── */
+.mobile-tab-nav {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .mobile-tab-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #0d0b1a;
+    border-top: 1px solid #2a2450;
+    z-index: 50;
+    padding: 8px 0 env(safe-area-inset-bottom);
+  }
+
+  .mobile-tab-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px;
+    background: none;
+    border: none;
+    color: #8b7eb8;
+    font-size: 10px;
+    cursor: pointer;
+    transition: color .2s;
+  }
+
+  .mobile-tab-btn.active {
+    color: #a78bfa;
+  }
+
+  .mobile-tab-icon {
+    font-size: 20px;
+  }
+
+  /* Push content above bottom nav */
+  .quantra-layout {
+    padding-bottom: 80px;
+  }
+}

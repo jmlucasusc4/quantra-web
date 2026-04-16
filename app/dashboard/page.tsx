@@ -7,6 +7,7 @@ import { useProgress } from "@/hooks/useProgress";
 import { useActivity, activityLabel, relativeTime } from "@/hooks/useActivity";
 import type { Tier } from "@/lib/stripe";
 import { EmptyDashboardState } from "@/app/components/dashboard/EmptyState";
+import { OnboardingModal } from "@/app/components/onboarding/OnboardingModal";
 
 // ── Tier presentation ──────────────────────────────────────────────────────────
 
@@ -104,6 +105,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#0d0b1a] text-white">
+      <OnboardingModal />
       {/* Nav */}
       <nav className="border-b border-white/5 bg-[#0d0b1a]/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
@@ -155,7 +157,7 @@ export default function DashboardPage() {
 
         {/* ── Stat cards (only when demos have been run) ────────────── */}
         {(progressLoading || completedDemos.length > 0) && (<>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="stats-grid grid grid-cols-2 sm:grid-cols-4 gap-4">
           <StatCard
             label="Demos completed"
             value={loading ? "—" : completedDemos.length}
