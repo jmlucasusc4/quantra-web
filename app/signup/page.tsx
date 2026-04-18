@@ -44,15 +44,15 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
-      <div className="glass w-full max-w-sm p-8 space-y-6" style={{ background: 'rgba(13,11,26,0.85)' }}>
+      <div className="auth-card w-full max-w-sm p-8 space-y-6">
 
         <div className="text-center space-y-3">
           <div className="flex justify-center">
             <EntanglementLogo size={90} animate />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">Create Account</h1>
-            <p className="text-sm text-white/40 tracking-wide mt-0.5">Join Quantra</p>
+            <h1 className="text-2xl font-semibold text-white" style={{ letterSpacing: '-0.02em' }}>Create Account</h1>
+            <p className="text-sm mt-1" style={{ color: 'rgba(167,139,250,0.6)', letterSpacing: '0.04em' }}>Join Quantra</p>
           </div>
         </div>
 
