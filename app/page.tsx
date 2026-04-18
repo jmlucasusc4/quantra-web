@@ -9,7 +9,6 @@ import UpgradeGate from "./components/UpgradeGate";
 import { tierAtLeast, type Tier } from "@/lib/stripe";
 import { DemoSidebar } from "./components/sidebar/DemoSidebar";
 import { QuantumTooltip } from "./components/ui/QuantumTooltip";
-import { EntanglementLogo } from "./components/ui/EntanglementLogo";
 
 // Auto-wrap known quantum terms in a string with tooltips
 const TOOLTIP_TERMS = [
@@ -218,7 +217,7 @@ function HomeInner() {
       <header className="sticky top-0 z-10 border-b border-white/10 backdrop-blur-xl" style={{ background: "rgba(0,0,0,0.3)" }}>
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <EntanglementLogo size={28} animate={false} />
+            <img src="/quantra-logo.png" alt="Quantra" width={28} height={28} style={{ objectFit: 'contain' }} />
             <span className="font-bold text-lg tracking-tight text-white">Quantra</span>
           </div>
           <div className="flex items-center gap-4">

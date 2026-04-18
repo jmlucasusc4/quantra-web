@@ -9,7 +9,6 @@ import type { Tier } from "@/lib/stripe";
 import { EmptyDashboardState } from "@/app/components/dashboard/EmptyState";
 import { OnboardingModal } from "@/app/components/onboarding/OnboardingModal";
 import { SkillTree } from "@/app/components/dashboard/SkillTree";
-import { EntanglementLogo } from "@/app/components/ui/EntanglementLogo";
 import { TelemetryWidget } from "@/app/components/dashboard/TelemetryWidget";
 import { QuickResume } from "@/app/components/dashboard/QuickResume";
 
@@ -114,7 +113,7 @@ export default function DashboardPage() {
       <nav className="border-b border-white/5 bg-[#0d0b1a]/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <EntanglementLogo size={28} animate={false} />
+            <img src="/quantra-logo.png" alt="Quantra" width={28} height={28} style={{ objectFit: 'contain' }} />
             <span className="font-medium text-white/80">Quantra</span>
             <span className="text-white/20 text-sm">/</span>
             <span className="text-sm text-white/50">Dashboard</span>
