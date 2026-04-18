@@ -8,6 +8,9 @@ import { useActivity, activityLabel, relativeTime } from "@/hooks/useActivity";
 import type { Tier } from "@/lib/stripe";
 import { EmptyDashboardState } from "@/app/components/dashboard/EmptyState";
 import { OnboardingModal } from "@/app/components/onboarding/OnboardingModal";
+import { SkillTree } from "@/app/components/dashboard/SkillTree";
+import { TelemetryWidget } from "@/app/components/dashboard/TelemetryWidget";
+import { QuickResume } from "@/app/components/dashboard/QuickResume";
 
 // ── Tier presentation ──────────────────────────────────────────────────────────
 
@@ -75,7 +78,7 @@ const LEVEL_COLOR = {
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading: authLoading, logout } = useAuth();
-  const { sub,  loading: subLoading }           = useSubscription();
+  const { sub, loading: subLoading, hasAccess }  = useSubscription();
   const { completedDemos, readiness, loading: progressLoading } = useProgress();
   const { activities, loading: actLoading }     = useActivity(15);
 
@@ -178,6 +181,24 @@ export default function DashboardPage() {
             value={loading ? "—" : totalSims.toLocaleString()}
           />
         </div>
+
+        {/* ── Telemetry widget ──────────────────────────────────────── */}
+        <TelemetryWidget
+          totalSimsRun={totalSims}
+          totalKeysGenerated={keysGen}
+          completedCount={completedDemos.length}
+        />
+
+        {/* ── Quick Resume ──────────────────────────────────────────── */}
+        <QuickResume activities={activities} />
+
+        {/* ── Skill Tree ────────────────────────────────────────────── */}
+        <Card>
+          <SkillTree
+            completedDemos={completedDemos}
+            hasAccess={hasAccess}
+          />
+        </Card>
 
         {/* ── Readiness breakdown ────────────────────────────────────── */}
         <Card>
