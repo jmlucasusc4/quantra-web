@@ -135,19 +135,27 @@ export function SocialAuthButton({ provider, mode = 'signin' }: Props) {
           alignItems: 'center',
           justifyContent: 'center',
           gap: 10,
-          padding: '11px 16px',
-          background: 'transparent',
-          border: '1px solid #2a2450',
-          borderRadius: 9,
-          color: '#e2d9f3',
-          fontSize: 14,
-          fontWeight: 500,
+          padding: '10px 16px',
+          background: 'rgba(5, 7, 10, 0.72)',
+          border: '0.5px solid rgba(255,255,255,0.09)',
+          borderRadius: 8,
+          color: 'rgba(200,195,220,0.7)',
+          fontSize: 13,
+          fontWeight: 450,
           cursor: loading ? 'not-allowed' : 'pointer',
-          opacity: loading ? 0.7 : 1,
-          transition: 'border-color .2s',
+          opacity: loading ? 0.5 : 0.62,
+          transition: 'opacity 0.18s ease, border-color 0.18s ease, color 0.18s ease',
         }}
-        onMouseEnter={e => (e.currentTarget.style.borderColor = '#7c3aed')}
-        onMouseLeave={e => (e.currentTarget.style.borderColor = '#2a2450')}
+        onMouseEnter={e => {
+          e.currentTarget.style.opacity    = '1'
+          e.currentTarget.style.color      = 'rgba(230,225,245,1)'
+          e.currentTarget.style.borderColor = 'rgba(139,92,246,0.45)'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.opacity    = '0.62'
+          e.currentTarget.style.color      = 'rgba(200,195,220,0.7)'
+          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)'
+        }}
       >
         {icon}
         {loading

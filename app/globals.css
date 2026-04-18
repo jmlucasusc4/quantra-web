@@ -39,15 +39,65 @@ input:-webkit-autofill:focus {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-/* ── Auth card glassmorphic glow border ── */
+/* ── Auth card — Obsidian glass ── */
 .auth-card {
-  background: rgba(11, 9, 26, 0.88);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(124, 58, 237, 0.25);
-  border-radius: 20px;
+  background: rgba(11, 14, 20, 0.94);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 0.5px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
   box-shadow:
-    0 0 0 1px rgba(167,139,250,0.08) inset,
-    0 24px 64px rgba(0,0,0,0.5),
-    0 0 40px rgba(124,58,237,0.12);
+    0 0 0 1px rgba(109, 40, 217, 0.06) inset,
+    0 32px 80px rgba(0, 0, 0, 0.7),
+    0 0 60px rgba(109, 40, 217, 0.07);
+}
+
+/* Radial purple light-source behind the auth card */
+.auth-card-glow {
+  position: relative;
+  isolation: isolate;
+}
+.auth-card-glow::before {
+  content: '';
+  position: absolute;
+  inset: -80px;
+  background: radial-gradient(
+    ellipse at 50% 48%,
+    rgba(109, 40, 217, 0.22) 0%,
+    rgba(76,  29, 149, 0.09) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ── Obsidian input fields ── */
+.auth-input {
+  width: 100%;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(5, 7, 10, 0.97);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.auth-input:focus {
+  border-color: rgba(139, 92, 246, 0.75);
+  box-shadow:
+    0 0 0 3px rgba(124, 58, 237, 0.18),
+    0 0 18px rgba(124, 58, 237, 0.12);
+}
+.auth-input::placeholder {
+  color: rgba(255, 255, 255, 0.18);
+}
+
+/* Autofill obsidian override */
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(5,7,10,0.99) inset;
+  caret-color: #fff;
 }
