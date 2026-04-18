@@ -1,122 +1,144 @@
 'use client'
 // EntanglementLogo.tsx
-// SVG-based "Entanglement Loop" — intersecting orbital rings suggesting a Q
-// and quantum correlation. Chrome/metallic gradient with neon purple glow.
+// 3D metallic orb with cage lattice and three orbital rings at 60° intervals.
+// Layer order: back ring arcs → sphere + lattice → front ring arcs → glow nodes
 
 interface Props {
   size?: number
   animate?: boolean
 }
 
-export function EntanglementLogo({ size = 72, animate = true }: Props) {
+export function EntanglementLogo({ size = 80, animate = true }: Props) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 72 72"
+      viewBox="0 0 96 96"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={animate ? { animation: 'entangle-breathe 4s ease-in-out infinite' } : undefined}
+      style={animate ? { animation: 'q-breathe 4s ease-in-out infinite' } : undefined}
     >
       <defs>
-        {/* Outer glow filter */}
-        <filter id="el-glow" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur stdDeviation="3.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        {/* Soft glow */}
+        <filter id="q-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+        </filter>
+        <filter id="q-glow-strong" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="3.5" result="blur"/>
+          <feComposite in="SourceGraphic" in2="blur" operator="over"/>
         </filter>
 
-        {/* Chrome gradient — ring 1 (horizontal) */}
-        <linearGradient id="el-chrome-h" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stopColor="#c4b8e8" />
-          <stop offset="30%"  stopColor="#a78bfa" />
-          <stop offset="60%"  stopColor="#7c3aed" />
-          <stop offset="100%" stopColor="#4c1d95" />
-        </linearGradient>
-
-        {/* Chrome gradient — ring 2 (vertical) */}
-        <linearGradient id="el-chrome-v" x1="100%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%"   stopColor="#e2d9f3" />
-          <stop offset="40%"  stopColor="#a78bfa" />
-          <stop offset="100%" stopColor="#6d28d9" />
-        </linearGradient>
-
-        {/* Chrome gradient — ring 3 (diagonal) */}
-        <linearGradient id="el-chrome-d" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%"   stopColor="#7c3aed" />
-          <stop offset="50%"  stopColor="#c4b8e8" />
-          <stop offset="100%" stopColor="#a78bfa" />
-        </linearGradient>
-
-        {/* Core sphere gradient */}
-        <radialGradient id="el-core" cx="42%" cy="38%" r="58%">
-          <stop offset="0%"   stopColor="#e2d9f3" stopOpacity="0.9" />
-          <stop offset="40%"  stopColor="#a78bfa" stopOpacity="0.6" />
-          <stop offset="100%" stopColor="#1d1640" stopOpacity="0.8" />
+        {/* Sphere: metallic chrome, highlight at upper-left */}
+        <radialGradient id="q-sphere" cx="36%" cy="30%" r="70%">
+          <stop offset="0%"   stopColor="#ddd6f3"/>
+          <stop offset="20%"  stopColor="#a78bfa"/>
+          <stop offset="55%"  stopColor="#4c1d95"/>
+          <stop offset="100%" stopColor="#130e28"/>
         </radialGradient>
 
-        {/* Purple glow behind everything */}
-        <radialGradient id="el-bg-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stopColor="#7c3aed" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
+        {/* Subtle rim light on sphere edge */}
+        <radialGradient id="q-rim" cx="50%" cy="50%" r="50%">
+          <stop offset="78%"  stopColor="transparent"/>
+          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.6"/>
         </radialGradient>
+
+        {/* Background ambient glow */}
+        <radialGradient id="q-ambient" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stopColor="#7c3aed" stopOpacity="0.22"/>
+          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0"/>
+        </radialGradient>
+
+        {/* Ring gradients — chrome purple, each oriented differently */}
+        <linearGradient id="q-r1" x1="0%" y1="50%" x2="100%" y2="50%">
+          <stop offset="0%"   stopColor="#4c1d95" stopOpacity="0.7"/>
+          <stop offset="30%"  stopColor="#c4b8e8"/>
+          <stop offset="70%"  stopColor="#a78bfa"/>
+          <stop offset="100%" stopColor="#4c1d95" stopOpacity="0.7"/>
+        </linearGradient>
+        <linearGradient id="q-r2" x1="20%" y1="0%" x2="80%" y2="100%">
+          <stop offset="0%"   stopColor="#6d28d9" stopOpacity="0.7"/>
+          <stop offset="40%"  stopColor="#e2d9f3"/>
+          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.7"/>
+        </linearGradient>
+        <linearGradient id="q-r3" x1="80%" y1="0%" x2="20%" y2="100%">
+          <stop offset="0%"   stopColor="#7c3aed" stopOpacity="0.7"/>
+          <stop offset="45%"  stopColor="#ddd6f3"/>
+          <stop offset="100%" stopColor="#4c1d95" stopOpacity="0.7"/>
+        </linearGradient>
+
+        {/* Clip to sphere interior for lattice */}
+        <clipPath id="q-clip">
+          <circle cx="48" cy="48" r="15.8"/>
+        </clipPath>
       </defs>
 
-      {/* Background glow */}
-      <circle cx="36" cy="36" r="34" fill="url(#el-bg-glow)" />
+      {/* Ambient background glow */}
+      <circle cx="48" cy="48" r="46" fill="url(#q-ambient)"/>
 
-      {/* Outer dark ring base */}
-      <circle cx="36" cy="36" r="30" fill="#0d0b1a" stroke="#2a2450" strokeWidth="1" />
+      {/* ── BACK arcs (lower opacity — the far side of each ring) ── */}
+      {/* Ring 1 back (bottom arc) */}
+      <path d="M 13,48 A 35,10.5 0 0,0 83,48"
+        stroke="url(#q-r1)" strokeWidth="1.8" fill="none" opacity="0.32" filter="url(#q-glow)"/>
+      {/* Ring 2 back */}
+      <path d="M 13,48 A 35,10.5 0 0,0 83,48"
+        stroke="url(#q-r2)" strokeWidth="1.8" fill="none" opacity="0.32" filter="url(#q-glow)"
+        transform="rotate(60,48,48)"/>
+      {/* Ring 3 back */}
+      <path d="M 13,48 A 35,10.5 0 0,0 83,48"
+        stroke="url(#q-r3)" strokeWidth="1.8" fill="none" opacity="0.32" filter="url(#q-glow)"
+        transform="rotate(-60,48,48)"/>
 
-      {/* Core sphere */}
-      <circle cx="36" cy="36" r="12" fill="url(#el-core)" />
-      <circle cx="32" cy="31" r="3.5" fill="white" fillOpacity="0.18" />
+      {/* ── SPHERE ── */}
+      <circle cx="48" cy="48" r="16" fill="url(#q-sphere)"/>
 
-      {/* Orbital ring 1 — horizontal ellipse */}
-      <ellipse
-        cx="36" cy="36"
-        rx="28" ry="10"
-        stroke="url(#el-chrome-h)"
-        strokeWidth="2.2"
-        fill="none"
-        strokeLinecap="round"
-        filter="url(#el-glow)"
-      />
+      {/* Cage lattice clipped inside sphere */}
+      <g clipPath="url(#q-clip)" opacity="0.45">
+        {/* Latitude rings */}
+        <ellipse cx="48" cy="42.5" rx="13.5" ry="2.8"  stroke="#a78bfa" strokeWidth="0.55" fill="none"/>
+        <ellipse cx="48" cy="48"   rx="15.8" ry="3.4"  stroke="#a78bfa" strokeWidth="0.55" fill="none"/>
+        <ellipse cx="48" cy="53.5" rx="13.5" ry="2.8"  stroke="#a78bfa" strokeWidth="0.55" fill="none"/>
+        {/* Meridian arcs */}
+        <ellipse cx="48" cy="48" rx="2.8" ry="15.8" stroke="#a78bfa" strokeWidth="0.55" fill="none"/>
+        <ellipse cx="48" cy="48" rx="2.8" ry="15.8" stroke="#a78bfa" strokeWidth="0.55" fill="none" transform="rotate(60,48,48)"/>
+        <ellipse cx="48" cy="48" rx="2.8" ry="15.8" stroke="#a78bfa" strokeWidth="0.55" fill="none" transform="rotate(-60,48,48)"/>
+      </g>
 
-      {/* Orbital ring 2 — vertical ellipse */}
-      <ellipse
-        cx="36" cy="36"
-        rx="10" ry="28"
-        stroke="url(#el-chrome-v)"
-        strokeWidth="2.2"
-        fill="none"
-        strokeLinecap="round"
-        filter="url(#el-glow)"
-      />
+      {/* Sphere border rim light */}
+      <circle cx="48" cy="48" r="16" fill="url(#q-rim)" stroke="#7c3aed" strokeWidth="0.5" strokeOpacity="0.4"/>
 
-      {/* Orbital ring 3 — diagonal ellipse */}
-      <ellipse
-        cx="36" cy="36"
-        rx="28" ry="10"
-        stroke="url(#el-chrome-d)"
-        strokeWidth="1.4"
-        fill="none"
-        strokeLinecap="round"
-        strokeDasharray="6 4"
-        transform="rotate(50 36 36)"
-        opacity="0.7"
-        filter="url(#el-glow)"
-      />
+      {/* Specular highlight — sharp white spot upper-left */}
+      <ellipse cx="43" cy="41.5" rx="5.5" ry="3.5" fill="white" opacity="0.18" transform="rotate(-20,43,41.5)"/>
+      <circle  cx="41" cy="40"   r="1.8"            fill="white" opacity="0.25"/>
 
-      {/* Bright node points where rings intersect */}
-      <circle cx="8"  cy="36" r="2.2" fill="#a78bfa" filter="url(#el-glow)" />
-      <circle cx="64" cy="36" r="2.2" fill="#a78bfa" filter="url(#el-glow)" />
-      <circle cx="36" cy="8"  r="2.2" fill="#c4b8e8" filter="url(#el-glow)" />
-      <circle cx="36" cy="64" r="2.2" fill="#c4b8e8" filter="url(#el-glow)" />
+      {/* ── FRONT arcs (full opacity — near side of each ring) ── */}
+      {/* Ring 1 front (top arc) */}
+      <path d="M 13,48 A 35,10.5 0 0,1 83,48"
+        stroke="url(#q-r1)" strokeWidth="2.4" fill="none" filter="url(#q-glow)"/>
+      {/* Ring 2 front */}
+      <path d="M 13,48 A 35,10.5 0 0,1 83,48"
+        stroke="url(#q-r2)" strokeWidth="2.4" fill="none" filter="url(#q-glow)"
+        transform="rotate(60,48,48)"/>
+      {/* Ring 3 front */}
+      <path d="M 13,48 A 35,10.5 0 0,1 83,48"
+        stroke="url(#q-r3)" strokeWidth="2.4" fill="none" filter="url(#q-glow)"
+        transform="rotate(-60,48,48)"/>
+
+      {/* ── Glowing nodes at ring endpoints ── */}
+      {/* Ring 1 endpoints */}
+      <circle cx="13" cy="48" r="2.8" fill="#c4b8e8" filter="url(#q-glow-strong)"/>
+      <circle cx="83" cy="48" r="2.8" fill="#c4b8e8" filter="url(#q-glow-strong)"/>
+      {/* Ring 2 endpoints: rotate(60,48,48) of (13,48) → (30.5,18.6) and (83,48) → (65.5,77.4) */}
+      <circle cx="30.5" cy="18.6" r="2.8" fill="#a78bfa" filter="url(#q-glow-strong)"/>
+      <circle cx="65.5" cy="77.4" r="2.8" fill="#a78bfa" filter="url(#q-glow-strong)"/>
+      {/* Ring 3 endpoints: rotate(-60,48,48) of (13,48) → (30.5,77.4) and (83,48) → (65.5,18.6) */}
+      <circle cx="30.5" cy="77.4" r="2.8" fill="#a78bfa" filter="url(#q-glow-strong)"/>
+      <circle cx="65.5" cy="18.6" r="2.8" fill="#a78bfa" filter="url(#q-glow-strong)"/>
 
       <style>{`
-        @keyframes entangle-breathe {
-          0%, 100% { filter: drop-shadow(0 0 6px rgba(124,58,237,0.5)); transform: scale(1); }
-          50%       { filter: drop-shadow(0 0 14px rgba(167,139,250,0.8)); transform: scale(1.04); }
+        @keyframes q-breathe {
+          0%,100% { filter: drop-shadow(0 0 6px rgba(124,58,237,0.45)); }
+          50%      { filter: drop-shadow(0 0 18px rgba(167,139,250,0.85)); }
         }
       `}</style>
     </svg>
