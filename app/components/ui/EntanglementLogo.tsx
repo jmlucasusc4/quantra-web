@@ -1,11 +1,67 @@
 'use client'
+// Trefoil knot rendered from parametric equations.
+// Parametric: x(t) = sin(t) + 2sin(2t), y(t) = cos(t) - 2cos(2t)
+// Sampled at N points, converted to SVG cubic bezier path.
+// Weaving achieved by splitting the stroke into segments and alternating z-order.
+
+import { useMemo } from 'react'
 
 interface Props {
   size?: number
   animate?: boolean
 }
 
+const N = 300  // sample resolution
+
+function trefoilPoints(cx: number, cy: number, r: number) {
+  const pts: { x: number; y: number; t: number }[] = []
+  for (let i = 0; i <= N; i++) {
+    const t = (i / N) * 2 * Math.PI
+    const x = cx + r * (Math.sin(t) + 2 * Math.sin(2 * t)) / 3
+    const y = cy + r * (Math.cos(t) - 2 * Math.cos(2 * t)) / 3
+    pts.push({ x, y, t })
+  }
+  return pts
+}
+
+// Build SVG polyline "d" string from a slice of points
+function segmentD(pts: { x: number; y: number }[]) {
+  if (pts.length < 2) return ''
+  return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ')
+}
+
+// Determine if point at parameter t is "over" or "under" at each crossing.
+// For the trefoil, crossings occur near t = π/3, π, 5π/3 (every 2π/3).
+// We split the path into 6 alternating segments: over, under, over, under, over, under.
+function buildSegments(pts: { x: number; y: number; t: number }[]) {
+  // 6 crossing boundaries evenly spaced
+  const boundaries = [0, 1, 2, 3, 4, 5, 6].map(i => (i / 6) * 2 * Math.PI)
+  const segments: { pts: { x: number; y: number }[]; over: boolean }[] = []
+
+  for (let seg = 0; seg < 6; seg++) {
+    const tStart = boundaries[seg]
+    const tEnd   = boundaries[seg + 1]
+    const slice  = pts.filter(p => p.t >= tStart && p.t <= tEnd)
+    // Overlap slightly at edges for seamless joins
+    const prev = pts.find(p => p.t >= tStart - 0.05 && p.t < tStart)
+    const next = pts.find(p => p.t > tEnd && p.t <= tEnd + 0.05)
+    const full = [...(prev ? [prev] : []), ...slice, ...(next ? [next] : [])]
+    segments.push({ pts: full, over: seg % 2 === 0 })
+  }
+  return segments
+}
+
 export function EntanglementLogo({ size = 80, animate = true }: Props) {
+  const cx = 50, cy = 50, r = 42
+
+  const pts = useMemo(() => trefoilPoints(cx, cy, r), [])
+  const segments = useMemo(() => buildSegments(pts), [pts])
+
+  const underSegs = segments.filter(s => !s.over)
+  const overSegs  = segments.filter(s => s.over)
+
+  const id = (s: string) => `el-${s}`
+
   return (
     <svg
       width={size}
@@ -13,133 +69,105 @@ export function EntanglementLogo({ size = 80, animate = true }: Props) {
       viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={animate ? { animation: 'q-breathe 4s ease-in-out infinite' } : undefined}
+      style={animate ? { animation: 'el-breathe 4s ease-in-out infinite' } : undefined}
     >
       <defs>
-        <filter id="q-glow" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="2.5" result="blur"/>
+        {/* Metallic chrome stroke gradient */}
+        <linearGradient id={id('chrome')} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%"   stopColor="rgba(255,255,255,0.85)"/>
+          <stop offset="30%"  stopColor="#c4b8e8"/>
+          <stop offset="60%"  stopColor="#a855f7"/>
+          <stop offset="100%" stopColor="rgba(20,10,40,0.7)"/>
+        </linearGradient>
+
+        {/* Specular highlight — white top edge */}
+        <linearGradient id={id('spec')} x1="0%" y1="0%" x2="60%" y2="100%">
+          <stop offset="0%"   stopColor="rgba(255,255,255,0.55)"/>
+          <stop offset="100%" stopColor="rgba(255,255,255,0)"/>
+        </linearGradient>
+
+        {/* Glow filter */}
+        <filter id={id('glow')} x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
           <feComposite in="SourceGraphic" in2="blur" operator="over"/>
         </filter>
-        <filter id="q-outer-glow" x="-40%" y="-40%" width="180%" height="180%">
+
+        {/* Strong outer glow for "under" segments (they peek out) */}
+        <filter id={id('glow2')} x="-60%" y="-60%" width="220%" height="220%">
           <feGaussianBlur stdDeviation="5" result="blur"/>
-          <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          <feFlood floodColor="#a855f7" floodOpacity="0.5" result="color"/>
+          <feComposite in="color" in2="blur" operator="in" result="glow"/>
+          <feComposite in="SourceGraphic" in2="glow" operator="over"/>
         </filter>
-
-        {/* Sphere: solid base + metallic highlight */}
-        <radialGradient id="q-sphere-base" cx="38%" cy="32%" r="68%">
-          <stop offset="0%"   stopColor="#e8e0f8"/>
-          <stop offset="18%"  stopColor="#b49fdc"/>
-          <stop offset="45%"  stopColor="#6d28d9"/>
-          <stop offset="75%"  stopColor="#2e1a6e"/>
-          <stop offset="100%" stopColor="#130e28"/>
-        </radialGradient>
-
-        {/* Rim light */}
-        <radialGradient id="q-rim" cx="50%" cy="50%" r="50%">
-          <stop offset="72%"  stopColor="transparent"/>
-          <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.7"/>
-        </radialGradient>
-
-        {/* Ambient purple glow behind everything */}
-        <radialGradient id="q-bg-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stopColor="#7c3aed" stopOpacity="0.3"/>
-          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0"/>
-        </radialGradient>
-
-        {/* Ring chrome gradients */}
-        <linearGradient id="q-rg1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%"   stopColor="#4c1d95" stopOpacity="0.5"/>
-          <stop offset="28%"  stopColor="#ddd6f3"/>
-          <stop offset="55%"  stopColor="#a78bfa"/>
-          <stop offset="80%"  stopColor="#c4b8e8"/>
-          <stop offset="100%" stopColor="#4c1d95" stopOpacity="0.5"/>
-        </linearGradient>
-        <linearGradient id="q-rg2" x1="15%" y1="0%" x2="85%" y2="100%">
-          <stop offset="0%"   stopColor="#5b21b6" stopOpacity="0.5"/>
-          <stop offset="35%"  stopColor="#ede9fe"/>
-          <stop offset="65%"  stopColor="#8b5cf6"/>
-          <stop offset="100%" stopColor="#5b21b6" stopOpacity="0.5"/>
-        </linearGradient>
-        <linearGradient id="q-rg3" x1="85%" y1="0%" x2="15%" y2="100%">
-          <stop offset="0%"   stopColor="#6d28d9" stopOpacity="0.5"/>
-          <stop offset="40%"  stopColor="#ddd6f3"/>
-          <stop offset="70%"  stopColor="#9d77e8"/>
-          <stop offset="100%" stopColor="#6d28d9" stopOpacity="0.5"/>
-        </linearGradient>
-
-        <clipPath id="q-sphere-clip">
-          <circle cx="50" cy="50" r="21.5"/>
-        </clipPath>
       </defs>
 
-      {/* Ambient glow */}
-      <circle cx="50" cy="50" r="48" fill="url(#q-bg-glow)"/>
+      {/* ── Ambient purple glow behind knot ── */}
+      <circle cx="50" cy="50" r="46"
+        fill="none"
+        stroke="#7c3aed"
+        strokeWidth="20"
+        strokeOpacity="0.08"
+        filter={`url(#${id('glow2')})`}
+      />
 
-      {/* ── BACK ring arcs (dim — far side) ── */}
-      <path d="M 7,50 A 43,12.5 0 0,0 93,50"
-        stroke="url(#q-rg1)" strokeWidth="2.2" strokeLinecap="round" fill="none"
-        opacity="0.28" filter="url(#q-glow)"/>
-      <path d="M 7,50 A 43,12.5 0 0,0 93,50"
-        stroke="url(#q-rg2)" strokeWidth="2.2" strokeLinecap="round" fill="none"
-        opacity="0.28" filter="url(#q-glow)"
-        transform="rotate(60,50,50)"/>
-      <path d="M 7,50 A 43,12.5 0 0,0 93,50"
-        stroke="url(#q-rg3)" strokeWidth="2.2" strokeLinecap="round" fill="none"
-        opacity="0.28" filter="url(#q-glow)"
-        transform="rotate(-60,50,50)"/>
+      {/* ── UNDER segments (drawn first — appear behind) ── */}
+      {underSegs.map((seg, i) => (
+        <g key={`under-${i}`}>
+          {/* Thick shadow beneath to create depth */}
+          <path
+            d={segmentD(seg.pts)}
+            stroke="#0a0518"
+            strokeWidth="6.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* Chrome fill */}
+          <path
+            d={segmentD(seg.pts)}
+            stroke={`url(#${id('chrome')})`}
+            strokeWidth="4"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.7"
+          />
+        </g>
+      ))}
 
-      {/* ── SPHERE ── */}
-      {/* Dark backing so sphere is visible against dark page */}
-      <circle cx="50" cy="50" r="22" fill="#0f0a22"/>
-      {/* Metallic gradient sphere */}
-      <circle cx="50" cy="50" r="22" fill="url(#q-sphere-base)"/>
-
-      {/* Cage lattice clipped inside sphere */}
-      <g clipPath="url(#q-sphere-clip)" opacity="0.5">
-        {/* Latitude bands */}
-        <ellipse cx="50" cy="43" rx="19.5" ry="3.5"  stroke="#a78bfa" strokeWidth="0.6" fill="none"/>
-        <ellipse cx="50" cy="50" rx="21.5" ry="4.2"  stroke="#a78bfa" strokeWidth="0.6" fill="none"/>
-        <ellipse cx="50" cy="57" rx="19.5" ry="3.5"  stroke="#a78bfa" strokeWidth="0.6" fill="none"/>
-        {/* Meridian arcs */}
-        <ellipse cx="50" cy="50" rx="3.5" ry="21.5"  stroke="#a78bfa" strokeWidth="0.6" fill="none"/>
-        <ellipse cx="50" cy="50" rx="3.5" ry="21.5"  stroke="#a78bfa" strokeWidth="0.6" fill="none" transform="rotate(60,50,50)"/>
-        <ellipse cx="50" cy="50" rx="3.5" ry="21.5"  stroke="#a78bfa" strokeWidth="0.6" fill="none" transform="rotate(-60,50,50)"/>
-      </g>
-
-      {/* Rim light */}
-      <circle cx="50" cy="50" r="22" fill="url(#q-rim)"/>
-      {/* Sphere border */}
-      <circle cx="50" cy="50" r="22" stroke="#7c3aed" strokeWidth="0.6" strokeOpacity="0.5" fill="none"/>
-
-      {/* Specular highlights */}
-      <ellipse cx="44" cy="42" rx="7" ry="4.5" fill="white" opacity="0.15" transform="rotate(-25,44,42)"/>
-      <circle  cx="41" cy="40" r="2.5"         fill="white" opacity="0.22"/>
-
-      {/* ── FRONT ring arcs (bright — near side) ── */}
-      <path d="M 7,50 A 43,12.5 0 0,1 93,50"
-        stroke="url(#q-rg1)" strokeWidth="3.2" strokeLinecap="round" fill="none"
-        filter="url(#q-glow)"/>
-      <path d="M 7,50 A 43,12.5 0 0,1 93,50"
-        stroke="url(#q-rg2)" strokeWidth="3.2" strokeLinecap="round" fill="none"
-        filter="url(#q-glow)"
-        transform="rotate(60,50,50)"/>
-      <path d="M 7,50 A 43,12.5 0 0,1 93,50"
-        stroke="url(#q-rg3)" strokeWidth="3.2" strokeLinecap="round" fill="none"
-        filter="url(#q-glow)"
-        transform="rotate(-60,50,50)"/>
-
-      {/* Small glowing tips at ring ends */}
-      <circle cx="7"  cy="50"    r="1.8" fill="#c4b8e8" filter="url(#q-glow)"/>
-      <circle cx="93" cy="50"    r="1.8" fill="#c4b8e8" filter="url(#q-glow)"/>
-      <circle cx="28.5" cy="19"  r="1.8" fill="#a78bfa" filter="url(#q-glow)"/>
-      <circle cx="71.5" cy="81"  r="1.8" fill="#a78bfa" filter="url(#q-glow)"/>
-      <circle cx="28.5" cy="81"  r="1.8" fill="#a78bfa" filter="url(#q-glow)"/>
-      <circle cx="71.5" cy="19"  r="1.8" fill="#a78bfa" filter="url(#q-glow)"/>
+      {/* ── OVER segments (drawn last — appear in front) ── */}
+      {overSegs.map((seg, i) => (
+        <g key={`over-${i}`} filter={`url(#${id('glow')})`}>
+          {/* Shadow beneath */}
+          <path
+            d={segmentD(seg.pts)}
+            stroke="#0a0518"
+            strokeWidth="7"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* Chrome body */}
+          <path
+            d={segmentD(seg.pts)}
+            stroke={`url(#${id('chrome')})`}
+            strokeWidth="4.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* Specular highlight — thin white line on upper edge */}
+          <path
+            d={segmentD(seg.pts)}
+            stroke={`url(#${id('spec')})`}
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.9"
+          />
+        </g>
+      ))}
 
       <style>{`
-        @keyframes q-breathe {
-          0%,100% { filter: drop-shadow(0 0 5px rgba(124,58,237,0.4)); }
-          50%      { filter: drop-shadow(0 0 18px rgba(167,139,250,0.9)); }
+        @keyframes el-breathe {
+          0%,100% { filter: drop-shadow(0 0 4px rgba(168,85,247,0.4)); }
+          50%      { filter: drop-shadow(0 0 16px rgba(168,85,247,0.9)); }
         }
       `}</style>
     </svg>

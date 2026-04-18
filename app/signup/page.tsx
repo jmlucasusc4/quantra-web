@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { SocialAuthButton } from "@/app/components/auth/SocialAuthButton";
+import { EntanglementLogo } from "@/app/components/ui/EntanglementLogo";
 
 const RULES = [
   { label: "At least 8 characters",         check: (p: string) => p.length >= 8 },
@@ -47,7 +48,7 @@ export default function SignUpPage() {
 
         <div className="text-center space-y-3">
           <div className="flex justify-center">
-            <img src="/quantra-logo.png" alt="Quantra" width={80} height={80} style={{ objectFit: 'contain' }} />
+            <EntanglementLogo size={90} animate />
           </div>
           <div>
             <h1 className="text-xl font-bold text-white tracking-tight">Create Account</h1>
