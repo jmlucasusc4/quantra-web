@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { SocialAuthButton } from "@/app/components/auth/SocialAuthButton";
+import { EntanglementLogo } from "@/app/components/ui/EntanglementLogo";
 
 const RULES = [
   { label: "At least 8 characters",         check: (p: string) => p.length >= 8 },
@@ -45,10 +46,14 @@ export default function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="glass w-full max-w-sm p-8 space-y-6">
 
-        <div className="text-center space-y-1">
-          <div className="text-4xl">⚛️</div>
-          <h1 className="text-xl font-bold text-white">Create Account</h1>
-          <p className="text-sm text-white/40">Join Quantra</p>
+        <div className="text-center space-y-3">
+          <div className="flex justify-center">
+            <EntanglementLogo size={72} animate />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-white tracking-tight">Create Account</h1>
+            <p className="text-sm text-white/40 tracking-wide mt-0.5">Join Quantra</p>
+          </div>
         </div>
 
         <form onSubmit={submit} className="space-y-4">

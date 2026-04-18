@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { SocialAuthButton } from "@/app/components/auth/SocialAuthButton";
+import { EntanglementLogo } from "@/app/components/ui/EntanglementLogo";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -31,10 +32,14 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="glass w-full max-w-sm p-8 space-y-6">
 
-        <div className="text-center space-y-1">
-          <div className="text-4xl">⚛️</div>
-          <h1 className="text-xl font-bold text-white">Welcome Back</h1>
-          <p className="text-sm text-white/40">Log in to Quantra</p>
+        <div className="text-center space-y-3">
+          <div className="flex justify-center">
+            <EntanglementLogo size={72} animate />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-white tracking-tight">Welcome Back</h1>
+            <p className="text-sm text-white/40 tracking-wide mt-0.5">Log in to Quantra</p>
+          </div>
         </div>
 
         <form onSubmit={submit} className="space-y-4">
