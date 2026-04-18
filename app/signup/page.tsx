@@ -52,8 +52,8 @@ export default function SignUpPage() {
             <EntanglementLogo size={90} animate />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-white" style={{ letterSpacing: '-0.02em' }}>Create Account</h1>
-            <p className="text-sm mt-1" style={{ color: 'rgba(167,139,250,0.6)', letterSpacing: '0.04em' }}>Join Quantra</p>
+            <h1 className="text-2xl auth-heading">Create Account</h1>
+            <p className="text-sm mt-1 auth-subtext">Join Quantra</p>
           </div>
         </div>
 

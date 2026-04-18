@@ -38,8 +38,8 @@ export default function LoginPage() {
             <EntanglementLogo size={90} animate />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-white" style={{ letterSpacing: '-0.02em' }}>Welcome Back</h1>
-            <p className="text-sm mt-1" style={{ color: 'rgba(167,139,250,0.6)', letterSpacing: '0.04em' }}>Log in to Quantra</p>
+            <h1 className="text-2xl auth-heading">Welcome Back</h1>
+            <p className="text-sm mt-1 auth-subtext">Log in to Quantra</p>
           </div>
         </div>
 

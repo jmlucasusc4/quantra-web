@@ -71,15 +71,16 @@ input:-webkit-autofill:focus {
   z-index: -1;
 }
 
-/* ── Obsidian input fields ── */
+/* ── Obsidian input fields — #050505 @ 80% opacity, 0.5pt white/10 border ── */
 .auth-input {
   width: 100%;
   border-radius: 8px;
   padding: 10px 12px;
-  background: rgba(5, 7, 10, 0.97);
+  background: rgba(5, 5, 5, 0.82);
   border: 0.5px solid rgba(255, 255, 255, 0.1);
   color: #fff;
   font-size: 14px;
+  letter-spacing: -0.01em;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -90,7 +91,7 @@ input:-webkit-autofill:focus {
     0 0 18px rgba(124, 58, 237, 0.12);
 }
 .auth-input::placeholder {
-  color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.16);
 }
 
 /* Autofill obsidian override */
@@ -98,6 +99,17 @@ input:-webkit-autofill:focus {
 .auth-input:-webkit-autofill:hover,
 .auth-input:-webkit-autofill:focus {
   -webkit-text-fill-color: #fff;
-  -webkit-box-shadow: 0 0 0px 1000px rgba(5,7,10,0.99) inset;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(5,5,5,0.95) inset;
   caret-color: #fff;
+}
+
+/* ── Auth typography ── */
+.auth-heading {
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+.auth-subtext {
+  color: #888888;
+  letter-spacing: 0.01em;
 }

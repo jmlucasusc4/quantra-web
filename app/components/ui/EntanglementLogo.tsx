@@ -1,45 +1,54 @@
 'use client'
-// Entanglement Knot — parametric trefoil with true over/under weaving.
-// Chrome gradient: Black → DarkViolet → Silver → Purple → Silver → Black.
-// Three lobes, 3 crossings, node beads at crossing peaks.
+// Entanglement Core — (2,3) Torus Knot, procedural chrome shader.
+//
+// Parametric equations (torus knot, period 2π):
+//   x(t) = (2 + cos(3t)) · cos(2t)
+//   y(t) = (2 + cos(3t)) · sin(2t)
+//   z(t) = sin(3t)               ← depth, drives over/under
+//
+// Six draw-call layers:
+//   0. Ambient glow disc
+//   1. Purple bloom halo
+//   2. Obsidian shadow fill (makes gaps read as "behind")
+//   3. Dark outline border
+//   4. Primary chrome gradient stroke
+//   5. Secondary cross-gradient sheen (blended 38%)
+//   6. Specular highlight stroke — 1.2px white, offset (-1.2, -1.2)
 
 import { useMemo } from 'react'
 
-interface Props {
-  size?: number
-  animate?: boolean
-}
+interface Props { size?: number; animate?: boolean }
 
-const N = 300   // path samples
-const SCALE = 27
-const CX = 100
-const CY = 100
-const THRESH_SQ = 20   // 4.5 px crossing threshold (scaled space)
-const MIN_GAP   = 38   // min index separation between crossing arms
-const HALF_GAP  = 8    // indices blanked on the under-strand
+const N        = 500   // sample count — smooth at any size
+const SCALE    = 25    // px/unit; range ±3 → ±75px from centre (200×200 vb)
+const CX = 100, CY = 100
+const THRESH_SQ = 22   // crossing detection: ≈4.7px
+const MIN_GAP   = 55   // min index gap between two crossing arms
+const HALF_GAP  = 10   // indices blanked on the under-strand
 
 export function EntanglementLogo({ size = 80, animate = true }: Props) {
   const { fullPath, gappedPath, beads } = useMemo(() => {
-    const TWO_PI = Math.PI * 2
+    const TAU = Math.PI * 2
 
-    // ── Sample trefoil knot ──────────────────────────────────────────────
+    // ── 1. Sample the (2,3) torus knot ────────────────────────────────────
     const pts: Array<{ px: number; py: number; z: number }> = []
     for (let i = 0; i < N; i++) {
-      const t  = (i / N) * TWO_PI
+      const t = (i / N) * TAU
+      const r = 2 + Math.cos(3 * t)
       pts.push({
-        px: CX + (Math.sin(t) + 2 * Math.sin(2 * t)) * SCALE,
-        py: CY + (Math.cos(t) - 2 * Math.cos(2 * t)) * SCALE,
-        z:  Math.sin(3 * t),   // depth: positive = toward viewer
+        px: CX + r * Math.cos(2 * t) * SCALE,
+        py: CY + r * Math.sin(2 * t) * SCALE,
+        z:  Math.sin(3 * t),
       })
     }
 
-    // ── Detect the 3 self-intersections ─────────────────────────────────
+    // ── 2. Detect the 3 self-intersections in the 2D projection ───────────
     const crossings: Array<{ under: number; over: number }> = []
 
-    for (let i = 0; i < N && crossings.length < 3; i++) {
+    outer: for (let i = 0; i < N; i++) {
       for (let dj = MIN_GAP; dj <= N - MIN_GAP; dj++) {
         const j  = (i + dj) % N
-        if (j <= i && dj < N / 2) continue   // avoid double-counting
+        if (j <= i && dj < N / 2) continue   // avoid duplicate pairs
         const dx = pts[i].px - pts[j].px
         const dy = pts[i].py - pts[j].py
         if (dx * dx + dy * dy < THRESH_SQ) {
@@ -55,12 +64,13 @@ export function EntanglementLogo({ size = 80, animate = true }: Props) {
                 ? { under: i, over: j }
                 : { under: j, over: i }
             )
+            if (crossings.length === 3) break outer
           }
         }
       }
     }
 
-    // ── Gap set: blank the under-strand near each crossing ───────────────
+    // ── 3. Gap set — indices where the under-strand is blanked ────────────
     const gapSet = new Set<number>()
     for (const { under } of crossings) {
       for (let k = -HALF_GAP; k <= HALF_GAP; k++) {
@@ -68,8 +78,8 @@ export function EntanglementLogo({ size = 80, animate = true }: Props) {
       }
     }
 
-    // ── Build SVG path strings ───────────────────────────────────────────
-    const toPath = (applyGaps: boolean) => {
+    // ── 4. Build SVG path strings ──────────────────────────────────────────
+    const toPath = (applyGaps: boolean): string => {
       const parts: string[] = []
       let pen = false
       for (let i = 0; i < N; i++) {
@@ -84,11 +94,11 @@ export function EntanglementLogo({ size = 80, animate = true }: Props) {
       return parts.join(' ')
     }
 
-    // Bead positions: midpoint between the two crossing arms
-    const beads = crossings.map(({ under, over }) => {
-      const u = pts[under], o = pts[over]
-      return { px: (u.px + o.px) / 2, py: (u.py + o.py) / 2 }
-    })
+    // Beads: midpoint between the two arms of each crossing
+    const beads = crossings.map(({ under, over }) => ({
+      px: (pts[under].px + pts[over].px) / 2,
+      py: (pts[under].py + pts[over].py) / 2,
+    }))
 
     return {
       fullPath:   toPath(false) + ' Z',
@@ -99,143 +109,166 @@ export function EntanglementLogo({ size = 80, animate = true }: Props) {
 
   return (
     <svg
-      width={size}
-      height={size}
+      width={size} height={size}
       viewBox="0 0 200 200"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       style={animate ? { animation: 'elk-breathe 4s ease-in-out infinite' } : undefined}
     >
       <defs>
-        {/* Chrome gradients: near-black → deep violet → silver → purple → silver → black */}
-        <linearGradient id="elk-g1" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor="#06060C"/>
-          <stop offset="18%"  stopColor="#4C1D95"/>
-          <stop offset="40%"  stopColor="#C8D0DC"/>
+        {/* ── Chrome: Black → Gray → White → Purple → Black ── */}
+        <linearGradient id="elk-chrome" x1="20" y1="20" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#050508"/>
+          <stop offset="15%"  stopColor="#40415A"/>
+          <stop offset="34%"  stopColor="#E6ECF4"/>
+          <stop offset="50%"  stopColor="#A78BFA"/>
+          <stop offset="67%"  stopColor="#D2D8E4"/>
+          <stop offset="84%"  stopColor="#2C2D3E"/>
+          <stop offset="100%" stopColor="#030407"/>
+        </linearGradient>
+        {/* Cross-diagonal sheen for visual depth */}
+        <linearGradient id="elk-chrome2" x1="180" y1="20" x2="20" y2="180" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#04050B"/>
+          <stop offset="18%"  stopColor="#6D28D9"/>
+          <stop offset="40%"  stopColor="#EEF2F8"/>
           <stop offset="58%"  stopColor="#7C3AED"/>
-          <stop offset="78%"  stopColor="#A0A8B4"/>
-          <stop offset="100%" stopColor="#040508"/>
-        </linearGradient>
-        <linearGradient id="elk-g2" x1="200" y1="0" x2="0" y2="200" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor="#05060B"/>
-          <stop offset="20%"  stopColor="#5B21B6"/>
-          <stop offset="44%"  stopColor="#E2E8F0"/>
-          <stop offset="62%"  stopColor="#6D28D9"/>
-          <stop offset="82%"  stopColor="#94A3B8"/>
-          <stop offset="100%" stopColor="#040610"/>
-        </linearGradient>
-        <linearGradient id="elk-g3" x1="100" y1="0" x2="100" y2="200" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor="#06070E"/>
-          <stop offset="22%"  stopColor="#6D28D9"/>
-          <stop offset="48%"  stopColor="#DDE4EC"/>
-          <stop offset="66%"  stopColor="#8B5CF6"/>
-          <stop offset="88%"  stopColor="#8899A6"/>
-          <stop offset="100%" stopColor="#050710"/>
+          <stop offset="78%"  stopColor="#C8D0DC"/>
+          <stop offset="100%" stopColor="#030409"/>
         </linearGradient>
 
-        {/* Purple ambient behind logo */}
+        {/* Ambient indigo disc */}
         <radialGradient id="elk-ambient" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stopColor="#4C1D95" stopOpacity="0.28"/>
-          <stop offset="45%"  stopColor="#7C3AED" stopOpacity="0.09"/>
-          <stop offset="100%" stopColor="#0F0C2A" stopOpacity="0"/>
+          <stop offset="0%"   stopColor="#3B0764" stopOpacity="0.40"/>
+          <stop offset="42%"  stopColor="#6D28D9" stopOpacity="0.13"/>
+          <stop offset="100%" stopColor="#090718" stopOpacity="0"/>
         </radialGradient>
 
-        {/* Crystal core fill */}
-        <radialGradient id="elk-crystal" cx="33%" cy="26%" r="72%">
-          <stop offset="0%"   stopColor="#DDD5FF"/>
-          <stop offset="28%"  stopColor="#7C3AED"/>
-          <stop offset="62%"  stopColor="#2E1065"/>
-          <stop offset="100%" stopColor="#060710"/>
+        {/* Rounded-square core */}
+        <radialGradient id="elk-core" cx="30%" cy="24%" r="78%">
+          <stop offset="0%"   stopColor="#D8CFFF"/>
+          <stop offset="22%"  stopColor="#7C3AED"/>
+          <stop offset="52%"  stopColor="#2E1065"/>
+          <stop offset="100%" stopColor="#06070F"/>
         </radialGradient>
 
-        {/* Node bead fill */}
-        <radialGradient id="elk-bead" cx="28%" cy="24%" r="66%">
-          <stop offset="0%"   stopColor="#F8FAFC"/>
-          <stop offset="38%"  stopColor="#A78BFA"/>
-          <stop offset="72%"  stopColor="#4C1D95"/>
-          <stop offset="100%" stopColor="#06080F"/>
+        {/* Chrome node bead */}
+        <radialGradient id="elk-bead" cx="26%" cy="22%" r="65%">
+          <stop offset="0%"   stopColor="#FFFFFF"/>
+          <stop offset="28%"  stopColor="#C4B5FD"/>
+          <stop offset="62%"  stopColor="#4C1D95"/>
+          <stop offset="100%" stopColor="#040609"/>
         </radialGradient>
 
-        {/* Soft glow on chrome strands */}
-        <filter id="elk-glow" x="-40%" y="-40%" width="180%" height="180%">
+        {/* Strand chromatic glow */}
+        <filter id="elk-glow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2.8" result="b"/>
           <feComposite in="SourceGraphic" in2="b" operator="over"/>
         </filter>
 
-        {/* Node bead glow */}
-        <filter id="elk-nglow" x="-90%" y="-90%" width="280%" height="280%">
-          <feGaussianBlur stdDeviation="4" result="b"/>
+        {/* Purple bloom — layers blurred purple under the shadow base */}
+        <filter id="elk-bloom" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="9" result="b"/>
+          <feMerge>
+            <feMergeNode in="b"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+
+        {/* Bead glow */}
+        <filter id="elk-nglow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="4.5" result="b"/>
           <feComposite in="SourceGraphic" in2="b" operator="over"/>
         </filter>
 
-        {/* Crystal drop shadow */}
+        {/* Core shadow */}
         <filter id="elk-cshadow">
-          <feDropShadow dx="1" dy="2" stdDeviation="4" floodColor="#3B0764" floodOpacity="0.55"/>
+          <feDropShadow dx="0" dy="2" stdDeviation="5" floodColor="#3B0764" floodOpacity="0.65"/>
         </filter>
       </defs>
 
-      {/* Ambient purple glow disc */}
-      <circle cx="100" cy="100" r="96" fill="url(#elk-ambient)"/>
+      {/* ── LAYER 0: Ambient indigo glow disc ── */}
+      <circle cx="100" cy="100" r="94" fill="url(#elk-ambient)"/>
 
-      {/* ── SHADOW BASE — full closed path in near-black, thick ── */}
-      {/* Makes the under-strand "pop" through the gaps of the chrome layer */}
+      {/* ── LAYER 1: Purple bloom halo ── */}
       <path d={fullPath}
-        stroke="#04050B" strokeWidth="18"
-        strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.97"/>
+        stroke="rgba(109,40,217,0.52)" strokeWidth="24"
+        strokeLinecap="round" strokeLinejoin="round" fill="none"
+        filter="url(#elk-bloom)" opacity="0.5"/>
 
-      {/* ── CHROME LAYER — gapped path, gradient strokes ── */}
-      {/* Shadow outline */}
+      {/* ── LAYER 2: Obsidian shadow fill ── */}
+      {/* Fills every part of the knot in near-black first.           */}
+      {/* The gapped chrome layer is drawn on top, leaving the dark   */}
+      {/* shadow visible inside the gaps → strands read as "behind".  */}
+      <path d={fullPath}
+        stroke="#01020A" strokeWidth="22"
+        strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.99"/>
+
+      {/* ── LAYER 3: Outer chrome border (dark halo around tube) ── */}
       <path d={gappedPath}
-        stroke="#060810" strokeWidth="14"
+        stroke="#06070E" strokeWidth="18"
         strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-      {/* Primary chrome gradient */}
+
+      {/* ── LAYER 4: Primary chrome gradient ── */}
       <path d={gappedPath}
-        stroke="url(#elk-g1)" strokeWidth="10"
+        stroke="url(#elk-chrome)" strokeWidth="12"
         strokeLinecap="round" strokeLinejoin="round" fill="none"
         filter="url(#elk-glow)"/>
-      {/* Secondary gradient overlay (shifted) */}
-      <path d={gappedPath}
-        stroke="url(#elk-g2)" strokeWidth="10"
-        strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.5"/>
-      {/* Specular white highlight */}
-      <path d={gappedPath}
-        stroke="rgba(255,255,255,0.55)" strokeWidth="1.4"
-        strokeLinecap="round" strokeLinejoin="round" fill="none"/>
 
-      {/* ── CRYSTAL DIAMOND CORE ── */}
-      {/* Soft shadow blob */}
-      <ellipse cx="101" cy="103" rx="18" ry="16"
-        fill="#1E0052" opacity="0.55" style={{ filter: 'blur(6px)' }}/>
-      {/* Diamond body */}
-      <path d="M100,76 C107,76 124,93 124,100 C124,107 107,124 100,124 C93,124 76,107 76,100 C76,93 93,76 100,76 Z"
-        fill="url(#elk-crystal)" filter="url(#elk-cshadow)"/>
-      {/* Outer facet */}
-      <path d="M100,76 L124,100 L100,124 L76,100 Z"
-        stroke="rgba(167,139,250,0.18)" strokeWidth="0.6" fill="none"/>
-      {/* Inner facet */}
-      <path d="M100,84 L116,100 L100,116 L84,100 Z"
+      {/* ── LAYER 5: Secondary cross-diagonal sheen (38% blend) ── */}
+      <path d={gappedPath}
+        stroke="url(#elk-chrome2)" strokeWidth="12"
+        strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.38"/>
+
+      {/* ── LAYER 6: Specular highlight ── */}
+      {/* 1.2px white stroke offset (-1.2, -1.2) = top-left light-catch */}
+      <path d={gappedPath}
+        stroke="rgba(255,255,255,0.60)" strokeWidth="1.2"
+        strokeLinecap="round" strokeLinejoin="round" fill="none"
+        transform="translate(-1.2,-1.2)"/>
+
+      {/* ── CORE: Rounded square (matches reference image) ── */}
+      {/* Shadow blob */}
+      <ellipse cx="101" cy="104" rx="16" ry="14"
+        fill="#1A0040" opacity="0.7" style={{ filter: 'blur(8px)' }}/>
+      {/* Body */}
+      <rect x="80" y="80" width="40" height="40" rx="9" ry="9"
+        fill="url(#elk-core)" filter="url(#elk-cshadow)"/>
+      {/* Outer bevel */}
+      <rect x="84" y="84" width="32" height="32" rx="6" ry="6"
+        stroke="rgba(167,139,250,0.2)" strokeWidth="0.6" fill="none"/>
+      {/* Inner bevel */}
+      <rect x="88" y="88" width="24" height="24" rx="4" ry="4"
         stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" fill="none"/>
       {/* Specular streak */}
-      <ellipse cx="89" cy="87" rx="7.5" ry="4"
-        fill="white" opacity="0.22" transform="rotate(-42 89 87)"/>
-      <circle cx="87" cy="85" r="2.2" fill="white" opacity="0.30"/>
-      {/* Border ring */}
-      <path d="M100,76 C107,76 124,93 124,100 C124,107 107,124 100,124 C93,124 76,107 76,100 C76,93 93,76 100,76 Z"
-        stroke="rgba(109,40,217,0.4)" strokeWidth="0.7" fill="none"/>
+      <ellipse cx="87" cy="86" rx="7" ry="3.5"
+        fill="white" opacity="0.22" transform="rotate(-40 87 86)"/>
+      <circle cx="85" cy="84" r="2" fill="white" opacity="0.30"/>
+      {/* Border glow */}
+      <rect x="80" y="80" width="40" height="40" rx="9" ry="9"
+        stroke="rgba(109,40,217,0.44)" strokeWidth="0.7" fill="none"/>
 
       {/* ── NODE BEADS at crossing midpoints ── */}
       {beads.map((b, i) => (
         <g key={i} filter="url(#elk-nglow)">
-          <circle cx={b.px} cy={b.py} r={8.5} fill="#04050C"/>
-          <circle cx={b.px} cy={b.py} r={7.2} fill="url(#elk-bead)"/>
-          <circle cx={b.px - 2.2} cy={b.py - 2.2} r={2.4} fill="white" opacity="0.62"/>
+          {/* Dark outer ring */}
+          <circle cx={b.px} cy={b.py} r={9.5}  fill="#01020A"/>
+          {/* Chrome bead */}
+          <circle cx={b.px} cy={b.py} r={7.8}  fill="url(#elk-bead)"/>
+          {/* Specular dot */}
+          <circle cx={b.px - 2.5} cy={b.py - 2.5} r={2.6} fill="white" opacity="0.68"/>
         </g>
       ))}
 
       <style>{`
         @keyframes elk-breathe {
-          0%,100% { filter: drop-shadow(0 0 5px rgba(109,40,217,0.4)); }
-          50%      { filter: drop-shadow(0 0 24px rgba(124,58,237,0.9)); }
+          0%,100% {
+            filter: drop-shadow(0 0 6px rgba(109,40,217,0.50))
+                    drop-shadow(0 0 18px rgba(76,29,149,0.22));
+          }
+          50% {
+            filter: drop-shadow(0 0 28px rgba(124,58,237,1.0))
+                    drop-shadow(0 0 55px rgba(109,40,217,0.42));
+          }
         }
       `}</style>
     </svg>
