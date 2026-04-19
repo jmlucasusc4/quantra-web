@@ -7,6 +7,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Quantra — Quantum Algorithm Playground",
   description: "Interactive quantum algorithm simulations: Grover's search, Shor's factoring, BB84 QKD, and more.",
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

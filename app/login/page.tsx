@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { SocialAuthButton } from "@/app/components/auth/SocialAuthButton";
-import { EntanglementLogo } from "@/app/components/ui/EntanglementLogo";
+import Image from "next/image";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -35,7 +35,7 @@ export default function LoginPage() {
 
         <div className="text-center space-y-3">
           <div className="flex justify-center">
-            <EntanglementLogo size={90} animate />
+            <Image src="/quantra-logo.png" alt="Quantra" width={80} height={80} />
           </div>
           <div>
             <h1 className="text-2xl auth-heading">Welcome Back</h1>

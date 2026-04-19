@@ -1,6 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 import { useState, useEffect, Suspense } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import nextDynamic from "next/dynamic";
 import { useAuth } from "@/lib/auth-context";
@@ -217,7 +218,7 @@ function HomeInner() {
       <header className="sticky top-0 z-10 border-b border-white/10 backdrop-blur-xl" style={{ background: "rgba(0,0,0,0.3)" }}>
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/quantra-logo.png" alt="Quantra" width={28} height={28} style={{ objectFit: 'contain' }} />
+            <Image src="/quantra-logo.png" alt="Quantra" width={32} height={32} />
             <span className="font-bold text-lg tracking-tight text-white">Quantra</span>
           </div>
           <div className="flex items-center gap-4">
