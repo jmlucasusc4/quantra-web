@@ -9,6 +9,15 @@ import { useRouter } from "next/navigation";
 const PLANS_QUARTERLY = { PRO: 79, RESEARCH: 249 };
 const PLANS_YEARLY    = { PRO: 276, RESEARCH: 948 };
 
+// Static lookup so Next.js can replace NEXT_PUBLIC_ vars at build time.
+// Dynamic bracket access (process.env[key]) bypasses build-time substitution.
+const PRICE_IDS: Record<string, string> = {
+  PRO_QUARTERLY:      process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_QUARTERLY      ?? "",
+  PRO_YEARLY:         process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY         ?? "",
+  RESEARCH_QUARTERLY: process.env.NEXT_PUBLIC_STRIPE_PRICE_RESEARCH_QUARTERLY ?? "",
+  RESEARCH_YEARLY:    process.env.NEXT_PUBLIC_STRIPE_PRICE_RESEARCH_YEARLY    ?? "",
+};
+
 type Feature = { text: string; available: boolean };
 
 // Maps to env var suffix: STRIPE_PRICE_{priceKey}_QUARTERLY / _YEARLY
@@ -199,9 +208,8 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
     setBusy(true); setErr("");
     try {
       const suffix  = yearly ? "YEARLY" : "QUARTERLY";
-      const priceId = (process.env as Record<string, string | undefined>)[
-        `NEXT_PUBLIC_STRIPE_PRICE_${plan.priceKey}_${suffix}`
-      ] ?? "";
+      const priceId = PRICE_IDS[`${plan.priceKey}_${suffix}`] ?? "";
+      console.log("[Stripe checkout] priceId:", priceId, "plan:", plan.priceKey, suffix);
 
       const idToken = await user.getIdToken();
       const res     = await fetch("/api/stripe/checkout", {
