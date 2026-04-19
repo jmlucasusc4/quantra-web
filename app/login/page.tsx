@@ -83,7 +83,6 @@ export default function LoginPage() {
         <div className="space-y-2">
           <SocialAuthButton provider="google"    mode="signin" />
           <SocialAuthButton provider="github"    mode="signin" />
-          <SocialAuthButton provider="microsoft" mode="signin" />
           <SocialAuthButton provider="twitter"   mode="signin" />
         </div>
 
