@@ -35,7 +35,7 @@ export default function LoginPage() {
 
         <div className="text-center space-y-3">
           <div className="flex justify-center">
-            <Image src="/quantra-logo.png" alt="Quantra" width={80} height={80} />
+            <Image src="/quantra-logo.png" alt="Quantra" width={96} height={96} />
           </div>
           <div>
             <h1 className="text-2xl auth-heading">Welcome Back</h1>
