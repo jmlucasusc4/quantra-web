@@ -3,6 +3,9 @@ export const dynamic = "force-dynamic";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth-context";
 import { SocialAuthButton } from "@/app/components/auth/SocialAuthButton";
 import Image from "next/image";
@@ -19,15 +22,16 @@ export default function SignUpPage() {
   const { signUp } = useAuth();
   const router = useRouter();
 
-  const [email, setEmail]       = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm]   = useState("");
-  const [error, setError]       = useState("");
-  const [loading, setLoading]   = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [email, setEmail]         = useState("");
+  const [password, setPassword]   = useState("");
+  const [confirm, setConfirm]     = useState("");
+  const [error, setError]         = useState("");
+  const [loading, setLoading]     = useState(false);
 
   const rules = RULES.map(r => ({ ...r, pass: r.check(password) }));
   const passwordsMatch = password === confirm && confirm.length > 0;
-  const canSubmit = rules.every(r => r.pass) && passwordsMatch && email.includes("@");
+  const canSubmit = firstName.trim().length > 0 && rules.every(r => r.pass) && passwordsMatch && email.includes("@");
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,6 +39,11 @@ export default function SignUpPage() {
     setError(""); setLoading(true);
     try {
       await signUp(email, password);
+      if (auth.currentUser) {
+        const name = firstName.trim();
+        await updateProfile(auth.currentUser, { displayName: name });
+        await setDoc(doc(db, "users", auth.currentUser.uid), { displayName: name }, { merge: true });
+      }
       router.push("/");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Sign up failed.");
@@ -49,7 +58,7 @@ export default function SignUpPage() {
 
         <div className="text-center space-y-3">
           <div className="flex justify-center">
-            <Image src="/quantra-logo.png" alt="Quantra" width={80} height={80} />
+            <Image src="/quantra-logo.png" alt="Quantra" width={96} height={96} />
           </div>
           <div>
             <h1 className="text-2xl auth-heading">Create Account</h1>
@@ -58,6 +67,13 @@ export default function SignUpPage() {
         </div>
 
         <form onSubmit={submit} className="space-y-4">
+          <div className="space-y-1">
+            <label className="text-xs text-white/40 tracking-wide">First Name</label>
+            <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} required
+              className="auth-input"
+              placeholder="Jane" />
+          </div>
+
           <div className="space-y-1">
             <label className="text-xs text-white/40 tracking-wide">Email</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
