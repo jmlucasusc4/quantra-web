@@ -4,6 +4,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
 import { useProgress } from '@/hooks/useProgress'
 
 const STEPS = [
@@ -40,6 +41,7 @@ export function OnboardingModal() {
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState(0)
   const router = useRouter()
+  const { user } = useAuth()
   const { completedDemos } = useProgress()
 
   useEffect(() => {
@@ -121,7 +123,9 @@ export function OnboardingModal() {
             {current.subtitle}
           </div>
           <h2 style={{ fontSize: 22, fontWeight: 500, color: '#a78bfa', marginBottom: 12 }}>
-            {current.title}
+            {step === 0 && user?.displayName
+              ? `Welcome to Quantra, ${user.displayName}`
+              : current.title}
           </h2>
           <p style={{ fontSize: 14, color: '#8b7eb8', lineHeight: 1.7 }}>
             {current.body}
