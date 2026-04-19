@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
+import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 
 // Pricing: quarterly is the default billing cadence; yearly saves ~25%
@@ -176,7 +177,7 @@ const PLANS: Plan[] = [
 ];
 
 function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router   = useRouter();
 
   const isFree       = plan.name === "Free";
@@ -209,9 +210,9 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
     try {
       const suffix  = yearly ? "YEARLY" : "QUARTERLY";
       const priceId = PRICE_IDS[`${plan.priceKey}_${suffix}`] ?? "";
-      console.log("[Stripe checkout] priceId:", priceId, "plan:", plan.priceKey, suffix);
 
-      const idToken = await user.getIdToken();
+      const idToken = await auth.currentUser?.getIdToken();
+      console.log("[Stripe checkout] priceId:", priceId, "idToken:", idToken);
       const res     = await fetch("/api/stripe/checkout", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
@@ -262,7 +263,7 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
 
         {/* CTA */}
         {err && <p className="text-red-400 text-xs mb-2 text-center">{err}</p>}
-        <button onClick={handleCta} disabled={busy}
+        <button onClick={handleCta} disabled={busy || (isPaid && authLoading)}
           className="block w-full text-center py-2.5 rounded-xl font-semibold text-sm mb-6 transition-all cursor-pointer disabled:opacity-50"
           style={
             plan.ctaStyle === "primary"
@@ -271,7 +272,7 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
               ? { background: "rgba(52,211,153,0.15)", color: "#34d399", border: "1px solid rgba(52,211,153,0.4)" }
               : { background: "rgba(255,255,255,0.08)", color: "#fff", border: "1px solid rgba(255,255,255,0.15)" }
           }>
-          {busy ? "Redirecting…" : plan.ctaLabel}
+          {isPaid && authLoading ? "Loading…" : busy ? "Redirecting…" : plan.ctaLabel}
         </button>
 
         {/* Feature sections */}
