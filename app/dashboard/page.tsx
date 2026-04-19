@@ -114,7 +114,7 @@ export default function DashboardPage() {
       <nav className="border-b border-white/5 bg-[#0d0b1a]/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Image src="/quantra-logo.png" alt="Quantra" width={32} height={32} />
+            <Image src="/quantra-logo-nav.png" alt="Quantra" width={32} height={32} />
             <span className="font-medium text-white/80">Quantra</span>
             <span className="text-white/20 text-sm">/</span>
             <span className="text-sm text-white/50">Dashboard</span>
@@ -134,7 +134,10 @@ export default function DashboardPage() {
         <Card className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex-1 min-w-0">
             <p className="text-xs text-white/40 uppercase tracking-widest mb-1">Account</p>
-            <p className="text-lg font-medium truncate">{user.email}</p>
+            <p className="text-lg font-medium truncate">{user.displayName ?? user.email}</p>
+            {user.displayName && (
+              <p className="text-sm text-white/40 truncate">{user.email}</p>
+            )}
             {renewalText && (
               <p className="text-sm text-white/40 mt-0.5">{renewalText}</p>
             )}
