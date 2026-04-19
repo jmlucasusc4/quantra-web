@@ -81,9 +81,8 @@ export default function LoginPage() {
         </div>
 
         <div className="space-y-2">
-          <SocialAuthButton provider="google"    mode="signin" />
-          <SocialAuthButton provider="github"    mode="signin" />
-          <SocialAuthButton provider="twitter"   mode="signin" />
+          <SocialAuthButton provider="google" mode="signin" />
+          <SocialAuthButton provider="github" mode="signin" />
         </div>
 
         <p className="text-center text-sm text-white/35">

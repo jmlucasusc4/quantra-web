@@ -134,9 +134,8 @@ export default function SignUpPage() {
         </div>
 
         <div className="space-y-2">
-          <SocialAuthButton provider="google"    mode="signup" />
-          <SocialAuthButton provider="github"    mode="signup" />
-          <SocialAuthButton provider="twitter"   mode="signup" />
+          <SocialAuthButton provider="google" mode="signup" />
+          <SocialAuthButton provider="github" mode="signup" />
         </div>
 
         <p className="text-center text-sm text-white/35">

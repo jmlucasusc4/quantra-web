@@ -203,8 +203,6 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
         `NEXT_PUBLIC_STRIPE_PRICE_${plan.priceKey}_${suffix}`
       ] ?? "";
 
-      if (!priceId) { setErr("Stripe not configured yet."); setBusy(false); return; }
-
       const idToken = await user.getIdToken();
       const res     = await fetch("/api/stripe/checkout", {
         method:  "POST",
