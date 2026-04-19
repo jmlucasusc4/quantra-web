@@ -1,6 +1,6 @@
 "use client";
 export const dynamic = "force-dynamic";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
@@ -295,6 +295,15 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
 
 export default function PricingPage() {
   const [yearly, setYearly] = useState(false);
+
+  useEffect(() => {
+    console.log("[Stripe env]", {
+      NEXT_PUBLIC_STRIPE_PRICE_PRO_QUARTERLY:      process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_QUARTERLY,
+      NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY:         process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY,
+      NEXT_PUBLIC_STRIPE_PRICE_RESEARCH_QUARTERLY: process.env.NEXT_PUBLIC_STRIPE_PRICE_RESEARCH_QUARTERLY,
+      NEXT_PUBLIC_STRIPE_PRICE_RESEARCH_YEARLY:    process.env.NEXT_PUBLIC_STRIPE_PRICE_RESEARCH_YEARLY,
+    });
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
