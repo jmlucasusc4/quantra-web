@@ -10,12 +10,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing priceId or idToken" }, { status: 400 });
     }
 
-    // Log token aud before verifying so we can spot project ID mismatches
+    // Log token prefix and aud to confirm it's a valid JWT and spot project mismatches
+    console.log("[stripe/checkout] idToken prefix:", idToken.slice(0, 20));
     const rawPayload = JSON.parse(Buffer.from(idToken.split(".")[1], "base64").toString());
     console.log("[stripe/checkout] token aud:", rawPayload.aud, "admin projectId:", process.env.FIREBASE_ADMIN_PROJECT_ID);
 
-    // Verify Firebase ID token
-    const decoded = await adminAuth().verifyIdToken(idToken);
+    // Verify Firebase ID token — isolated try/catch to surface auth errors clearly
+    let decoded;
+    try {
+      decoded = await adminAuth().verifyIdToken(idToken);
+    } catch (authErr: unknown) {
+      const msg  = authErr instanceof Error ? authErr.message : String(authErr);
+      const code = (authErr as Record<string, unknown>)?.code ?? "unknown";
+      console.error("[stripe/checkout] verifyIdToken failed — code:", code, "message:", msg);
+      return NextResponse.json({ error: `Token verification failed: ${msg}`, code }, { status: 401 });
+    }
     const uid   = decoded.uid;
     const email = decoded.email ?? "";
 
