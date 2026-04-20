@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe, tierFromPriceId } from "@/lib/stripe";
 import { adminAuth, adminDb } from "@/lib/firebase-admin";
 
+const env = (key: string) => process.env[key]?.trim() ?? "";
+
 export async function POST(req: NextRequest) {
   try {
-    const { priceId, idToken } = await req.json() as { priceId: string; idToken: string };
+    const body = await req.json() as { priceId: string; idToken: string };
+    const priceId  = body.priceId?.trim();
+    const idToken  = body.idToken?.trim();
 
     if (!priceId || !idToken) {
       return NextResponse.json({ error: "Missing priceId or idToken" }, { status: 400 });
