@@ -10,6 +10,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing priceId or idToken" }, { status: 400 });
     }
 
+    // Log token aud before verifying so we can spot project ID mismatches
+    const rawPayload = JSON.parse(Buffer.from(idToken.split(".")[1], "base64").toString());
+    console.log("[stripe/checkout] token aud:", rawPayload.aud, "admin projectId:", process.env.FIREBASE_ADMIN_PROJECT_ID);
+
     // Verify Firebase ID token
     const decoded = await adminAuth().verifyIdToken(idToken);
     const uid   = decoded.uid;
