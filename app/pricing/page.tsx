@@ -212,7 +212,7 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
     setBusy(true); setErr("");
     try {
       const suffix  = yearly ? "YEARLY" : "QUARTERLY";
-      const priceId = PRICE_IDS[`${plan.priceKey}_${suffix}`] ?? "";
+      const priceId = (PRICE_IDS[`${plan.priceKey}_${suffix}`] ?? "").trim();
       console.log("Price ID:", priceId);
 
       const idToken = await auth.currentUser?.getIdToken();
