@@ -5,15 +5,13 @@ import { getFirestore } from "firebase-admin/firestore";
 function getAdminApp(): App {
   if (getApps().length > 0) return getApps()[0];
 
-  const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n");
-  console.log("[firebase-admin] FIREBASE_ADMIN_PROJECT_ID:", process.env.FIREBASE_ADMIN_PROJECT_ID);
+  const projectId   = process.env.FIREBASE_ADMIN_PROJECT_ID?.trim();
+  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL?.trim();
+  const privateKey  = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  console.log("[firebase-admin] projectId:", projectId, "clientEmail:", clientEmail);
 
   return initializeApp({
-    credential: cert({
-      projectId:   process.env.FIREBASE_ADMIN_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-      privateKey,
-    }),
+    credential: cert({ projectId, clientEmail, privateKey }),
   });
 }
 
