@@ -5,10 +5,11 @@ const globalForStripe = globalThis as unknown as { stripe?: Stripe };
 
 function getStripe(): Stripe {
   if (globalForStripe.stripe) return globalForStripe.stripe;
-  if (!process.env.STRIPE_SECRET_KEY) {
+  const stripeKey = process.env.STRIPE_SECRET_KEY?.trim();
+  if (!stripeKey) {
     throw new Error("STRIPE_SECRET_KEY is not set");
   }
-  const instance = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  const instance = new Stripe(stripeKey, {
     apiVersion: "2026-03-25.dahlia",
     typescript: true,
   });
