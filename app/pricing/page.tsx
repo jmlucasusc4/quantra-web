@@ -200,24 +200,30 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
   const [err, setErr]   = useState("");
 
   async function handleCta() {
+    console.log("Button clicked");
     if (isFree) { router.push("/signup"); return; }
     if (isEnterprise) { window.location.href = "mailto:sales@quantra.ai"; return; }
     if (!plan.priceKey) return;
 
+    console.log("User:", user?.uid);
+    console.log("Auth loading:", authLoading);
     if (!user) { router.push("/login?next=/pricing"); return; }
 
     setBusy(true); setErr("");
     try {
       const suffix  = yearly ? "YEARLY" : "QUARTERLY";
       const priceId = PRICE_IDS[`${plan.priceKey}_${suffix}`] ?? "";
+      console.log("Price ID:", priceId);
 
       const idToken = await auth.currentUser?.getIdToken();
-      console.log("[Stripe checkout] priceId:", priceId, "idToken:", idToken);
-      const res     = await fetch("/api/stripe/checkout", {
+      console.log("[Stripe checkout] priceId:", priceId, "idToken:", idToken?.slice(0, 20));
+
+      const res  = await fetch("/api/stripe/checkout", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ priceId, idToken }),
       });
+      console.log("API response:", res.status, await res.clone().json());
       const data = await res.json() as { url?: string; error?: string };
       if (data.url) window.location.href = data.url;
       else setErr(data.error ?? "Something went wrong.");
