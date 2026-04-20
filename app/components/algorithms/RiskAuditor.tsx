@@ -68,23 +68,51 @@ export default function RiskAuditor() {
             <div className="rounded-xl overflow-hidden border border-white/5">
               {groupAlgos.map((algo, i) => (
                 <div key={algo.name}
-                  className={`flex items-start gap-3 px-3 py-3 min-h-[52px] ${i > 0 ? "border-t border-white/5" : ""} bg-white/2 hover:bg-white/5 transition-colors`}>
-                  {/* Toggle — fixed width, never shrinks */}
-                  <button onClick={() => toggle(algo.name)}
-                    className={`w-10 h-5 rounded-full transition-colors shrink-0 relative cursor-pointer mt-0.5 ${algo.inUse ? "" : "bg-white/20"}`}
-                    style={algo.inUse ? { background: RISK_COLOR[algo.risk] } : {}}>
-                    <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${algo.inUse ? "translate-x-5" : "translate-x-0.5"}`} />
-                  </button>
-                  {/* Text column — takes all remaining width; badge lives here so it never steals row space */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-semibold text-white">{algo.name}</p>
-                      <span className="text-xs font-bold px-1.5 py-0.5 rounded"
-                        style={{ color: RISK_COLOR[algo.risk], background: RISK_COLOR[algo.risk] + "22" }}>
+                  className={i > 0 ? "border-t border-white/5" : ""}
+                  style={{ display: "flex", alignItems: "flex-start", gap: "14px", padding: "14px 16px" }}>
+                  {/* Toggle — fixed 44px column, never shrinks */}
+                  <div style={{ flexShrink: 0, paddingTop: "2px" }}>
+                    <button
+                      onClick={() => toggle(algo.name)}
+                      style={{
+                        width: "44px",
+                        height: "24px",
+                        borderRadius: "9999px",
+                        background: algo.inUse ? RISK_COLOR[algo.risk] : "rgba(255,255,255,0.15)",
+                        position: "relative",
+                        cursor: "pointer",
+                        border: "none",
+                        flexShrink: 0,
+                        transition: "background 0.2s",
+                      }}>
+                      <span style={{
+                        position: "absolute",
+                        top: "3px",
+                        left: algo.inUse ? "23px" : "3px",
+                        width: "18px",
+                        height: "18px",
+                        borderRadius: "50%",
+                        background: "#fff",
+                        transition: "left 0.2s",
+                      }} />
+                    </button>
+                  </div>
+                  {/* Text column — flex:1 so it fills all remaining space */}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: "14px", fontWeight: 600, color: "#fff" }}>{algo.name}</span>
+                      <span style={{
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                        color: RISK_COLOR[algo.risk],
+                        background: RISK_COLOR[algo.risk] + "22",
+                      }}>
                         {RISK_LABEL[algo.risk]}
                       </span>
                     </div>
-                    <p className="text-xs text-white/40 mt-0.5 whitespace-normal break-words">{algo.reason}</p>
+                    <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", lineHeight: "1.4" }}>{algo.reason}</div>
                   </div>
                 </div>
               ))}
