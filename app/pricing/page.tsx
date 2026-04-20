@@ -1,6 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { auth } from "@/lib/firebase";
@@ -310,6 +311,8 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
 
 export default function PricingPage() {
   const [yearly, setYearly] = useState(false);
+  const { user, loading: authLoading, logout } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     console.log("[Stripe env]", {
@@ -326,15 +329,34 @@ export default function PricingPage() {
       <header className="sticky top-0 z-10 border-b border-white/10 backdrop-blur-xl" style={{ background: "rgba(0,0,0,0.3)" }}>
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl">⚛️</span>
+            <Image src="/quantra-logo-nav.png" alt="Quantra" width={32} height={32} />
             <span className="font-bold text-lg tracking-tight text-white">Quantra</span>
           </Link>
-          <div className="flex gap-4 text-sm">
-            <Link href="/login" className="text-white/50 hover:text-white transition-colors">Log in</Link>
-            <Link href="/signup" className="px-4 py-1.5 rounded-lg font-semibold text-white"
-              style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)" }}>
-              Sign up
-            </Link>
+          <div className="flex items-center gap-4 text-sm">
+            {!authLoading && (
+              user ? (
+                <>
+                  <span className="text-white/40 text-xs hidden sm:block">{user.email}</span>
+                  <Link href="/"
+                    className="text-white/60 hover:text-white transition-colors">
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => logout().then(() => router.push("/login"))}
+                    className="text-white/40 hover:text-white transition-colors cursor-pointer">
+                    Log out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" className="text-white/50 hover:text-white transition-colors">Log in</Link>
+                  <Link href="/signup" className="px-4 py-1.5 rounded-lg font-semibold text-white"
+                    style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)" }}>
+                    Sign up
+                  </Link>
+                </>
+              )
+            )}
           </div>
         </div>
       </header>
