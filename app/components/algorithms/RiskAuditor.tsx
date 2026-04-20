@@ -44,7 +44,7 @@ export default function RiskAuditor() {
                   ["🚨 High Risk",      "#f87171"];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" style={{ minWidth: 0, width: "100%" }}>
       {inUse.length > 0 && (
         <div className="p-3 rounded-xl border" style={{ borderColor: riskColor + "44", background: riskColor + "11" }}>
           <div className="flex justify-between">
@@ -69,9 +69,9 @@ export default function RiskAuditor() {
               {groupAlgos.map((algo, i) => (
                 <div key={algo.name}
                   className={i > 0 ? "border-t border-white/5" : ""}
-                  style={{ display: "flex", alignItems: "flex-start", gap: "14px", padding: "14px 16px" }}>
+                  style={{ display: "flex", alignItems: "flex-start", gap: "12px", padding: "14px 16px" }}>
                   {/* Toggle — fixed 44px column, never shrinks */}
-                  <div style={{ flexShrink: 0, paddingTop: "2px" }}>
+                  <div style={{ flexShrink: 0, minWidth: 0, paddingTop: "2px" }}>
                     <button
                       onClick={() => toggle(algo.name)}
                       style={{
@@ -97,8 +97,8 @@ export default function RiskAuditor() {
                       }} />
                     </button>
                   </div>
-                  {/* Text column — flex:1 so it fills all remaining space */}
-                  <div style={{ flex: 1 }}>
+                  {/* Text column — flex:1 fills remaining space; minWidth:0 + overflow:hidden prevent blowout */}
+                  <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px", flexWrap: "wrap" }}>
                       <span style={{ fontSize: "14px", fontWeight: 600, color: "#fff" }}>{algo.name}</span>
                       <span style={{

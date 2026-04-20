@@ -25,15 +25,21 @@
   }
 }
 
-/* ── Mobile (≤640px) ── */
-@media (max-width: 640px) {
-  /* Stack sidebar above demo panel */
+/* ── Narrow tablet / large mobile (≤768px) — stack layout ── */
+@media (max-width: 768px) {
   .quantra-layout {
     grid-template-columns: 1fr;
     padding: 12px;
     gap: 12px;
   }
 
+  .quantra-sidebar {
+    position: static;
+  }
+}
+
+/* ── Mobile (≤640px) — pill sidebar + extreme-mobile rules ── */
+@media (max-width: 640px) {
   /* Sidebar becomes horizontal scrolling tabs on mobile */
   .quantra-sidebar {
     position: static;
