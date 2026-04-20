@@ -44,15 +44,13 @@ export async function POST(req: NextRequest) {
       await adminDb().collection("users").doc(uid).set({ stripeCustomerId: customerId }, { merge: true });
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-
     const session = await stripe.checkout.sessions.create({
       customer:             customerId,
       client_reference_id: uid,
       mode:                 "subscription",
       line_items:           [{ price: priceId, quantity: 1 }],
-      success_url:          `${appUrl}/?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url:           `${appUrl}/pricing`,
+      success_url:          "https://quantra.space/dashboard?upgrade=success",
+      cancel_url:           "https://quantra.space/pricing?upgrade=cancelled",
       subscription_data:    { metadata: { uid } },
       allow_promotion_codes: true,
     });
