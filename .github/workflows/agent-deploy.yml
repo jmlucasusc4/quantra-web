@@ -1,0 +1,57 @@
+name: Agent-Triggered Content Deploy
+
+# Triggered by the DevOps Lead agent via GitHub API repository dispatch.
+# Manual fallback: Actions tab → Run workflow.
+on:
+  repository_dispatch:
+    types: [deploy-content-update]
+  workflow_dispatch:
+    inputs:
+      change_summary:
+        description: "What changed?"
+        required: true
+        default: "Manual deploy"
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false   # never cancel a running deploy
+
+jobs:
+  deploy:
+    name: Build & Deploy quantra.space
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Log dispatch payload
+        run: |
+          echo "Triggered by: ${{ github.event.client_payload.triggered_by || 'manual' }}"
+          echo "Change: ${{ github.event.client_payload.change_summary || github.event.inputs.change_summary }}"
+          echo "Files: ${{ toJson(github.event.client_payload.files_affected) }}"
+          echo "Target env: ${{ github.event.client_payload.environment || 'production' }}"
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js
+        run: npm run build
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+
+      - name: Deploy to Vercel (Production)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: "--prod"
