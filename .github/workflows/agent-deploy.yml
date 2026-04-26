@@ -55,3 +55,31 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: "--prod"
+
+      - name: Notify Discord — Success
+        if: success()
+        run: |
+          curl -s -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "✅ quantra.space deployed",
+                "description": "${{ github.event.client_payload.change_summary || github.event.inputs.change_summary }}",
+                "color": 5763719,
+                "footer": {"text": "Quantra DevOps Lead · triggered by ${{ github.event.client_payload.triggered_by || '\''manual'\'' }}"}
+              }]
+            }'
+
+      - name: Notify Discord — Failure
+        if: failure()
+        run: |
+          curl -s -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "❌ Deploy failed — quantra.space",
+                "description": "Check the [Actions log](https://github.com/${{ github.repository }}/actions) for details.",
+                "color": 15548997,
+                "footer": {"text": "Quantra DevOps Lead"}
+              }]
+            }'
