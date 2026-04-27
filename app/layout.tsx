@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="h-full">
       <head>
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-1C91HQM1KB"
+          src="https://www.googletagmanager.com/gtag/js?id=G-NSLJHSHC3F"
           strategy="afterInteractive"
         />
         <Script id="ga4-init" strategy="afterInteractive">
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-1C91HQM1KB');
+            gtag('config', 'G-NSLJHSHC3F');
           `}
         </Script>
       </head>
