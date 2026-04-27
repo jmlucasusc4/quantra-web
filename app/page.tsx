@@ -10,6 +10,7 @@ import UpgradeGate from "./components/UpgradeGate";
 import { tierAtLeast, type Tier } from "@/lib/stripe";
 import { DemoSidebar } from "./components/sidebar/DemoSidebar";
 import { QuantumTooltip } from "./components/ui/QuantumTooltip";
+import { LandingPage } from "./components/LandingPage";
 
 // Auto-wrap known quantum terms in a string with tooltips
 const TOOLTIP_TERMS = [
@@ -199,15 +200,13 @@ function HomeInner() {
   const initialKey = initialDemo ? (SLUG_TO_KEY[initialDemo] ?? 'superposition') : 'superposition';
   const [selected, setSelected] = useState(initialKey);
 
-  useEffect(() => {
-    if (!loading && !user) router.push("/login");
-  }, [user, loading, router]);
-
-  if (loading || !user) return (
+  if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-white/40 text-sm">Loading…</div>
     </div>
   );
+
+  if (!user) return <LandingPage />;
 
   const algo = ALGORITHMS.find(a => a.key === selected)!;
   const AlgoComponent = algo.component;
