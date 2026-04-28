@@ -241,6 +241,10 @@ function HomeInner() {
               className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">
               Dashboard
             </button>
+            <button onClick={() => router.push("/enterprise")}
+              className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">
+              Enterprise
+            </button>
             <span className="text-xs text-white/30 hidden sm:block">{user.email}</span>
             <button onClick={() => logout().then(() => router.push("/login"))}
               className="text-xs text-white/40 hover:text-white transition-colors cursor-pointer">
