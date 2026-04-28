@@ -8,6 +8,7 @@ import { useActivity, activityLabel, relativeTime } from "@/hooks/useActivity";
 import type { Tier } from "@/lib/stripe";
 import Image from "next/image";
 import { EmptyDashboardState } from "@/app/components/dashboard/EmptyState";
+import { QuantumCertificate } from "@/app/components/dashboard/QuantumCertificate";
 import { OnboardingModal } from "@/app/components/onboarding/OnboardingModal";
 import { SkillTree } from "@/app/components/dashboard/SkillTree";
 import { TelemetryWidget } from "@/app/components/dashboard/TelemetryWidget";
@@ -107,6 +108,18 @@ export default function DashboardPage() {
 
   const loading = subLoading || progressLoading;
 
+  const ALL_DEMO_SLUGS = [
+    'superposition','entanglement','bloch-sphere','deutsch-jozsa',
+    'classical-vs-quantum','grovers-search','bb84-protocol','crystals-kyber',
+    'harvest-now','quantum-risk-auditor','bernstein-vazirani','circuit-builder',
+    'simons-algorithm','shors-algorithm','quantum-teleportation',
+  ];
+  const allComplete = ALL_DEMO_SLUGS.every(s => completedDemos.includes(s));
+  const certId = `QRC-${user.uid.slice(0,4).toUpperCase()}-${user.uid.slice(4,8).toUpperCase()}`;
+  const completedAt = allComplete
+    ? new Date().toISOString()
+    : new Date().toISOString();
+
   return (
     <div className="min-h-screen bg-[#0d0b1a] text-white">
       <OnboardingModal />
@@ -129,6 +142,16 @@ export default function DashboardPage() {
       </nav>
 
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+
+        {/* ── Certificate ───────────────────────────────────────────── */}
+        {allComplete && (
+          <QuantumCertificate
+            displayName={user.displayName ?? user.email ?? "Quantum Scholar"}
+            readiness={readiness}
+            completedAt={completedAt}
+            certId={certId}
+          />
+        )}
 
         {/* ── Tier card ─────────────────────────────────────────────── */}
         <Card className="flex flex-col sm:flex-row sm:items-center gap-4">
