@@ -237,9 +237,9 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
   return (
     <div className="flex flex-col rounded-2xl overflow-hidden relative"
       style={{
-        background: plan.badge ? "rgba(124,58,237,0.12)" : "rgba(255,255,255,0.04)",
-        border: `1px solid ${plan.badge ? "rgba(168,85,247,0.5)" : "rgba(255,255,255,0.1)"}`,
-        boxShadow: plan.badge ? "0 0 40px rgba(124,58,237,0.2)" : "none",
+        background: plan.badge ? "rgba(124,58,237,0.14)" : "#0d0b1a",
+        border: `1px solid ${plan.badge ? "rgba(168,85,247,0.45)" : "#2a2450"}`,
+        boxShadow: plan.badge ? "0 0 48px rgba(124,58,237,0.22)" : "none",
       }}>
       {plan.badge && (
         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -324,12 +324,12 @@ export default function PricingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: "#07050f", color: "#e2d9f3" }}>
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-white/10 backdrop-blur-xl" style={{ background: "rgba(0,0,0,0.3)" }}>
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-10 border-b border-white/5 backdrop-blur-xl" style={{ background: "rgba(7,5,15,0.92)" }}>
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/quantra-logo-nav.png" alt="Quantra" width={32} height={32} />
+            <Image src="/quantra-mark.png" alt="Quantra" width={53} height={40} />
             <span className="font-bold text-lg tracking-tight text-white">Quantra</span>
           </Link>
           <div className="flex items-center gap-4 text-sm">
@@ -386,10 +386,12 @@ export default function PricingPage() {
         </div>
 
         {/* Plan grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
-          {PLANS.map(plan => (
-            <PlanCard key={plan.name} plan={plan} yearly={yearly} />
-          ))}
+        <div className="overflow-x-auto -mx-4 px-4 pb-2">
+          <div className="grid gap-4 items-start" style={{ gridTemplateColumns: "repeat(4, minmax(220px, 1fr))", minWidth: 900 }}>
+            {PLANS.map(plan => (
+              <PlanCard key={plan.name} plan={plan} yearly={yearly} />
+            ))}
+          </div>
         </div>
 
         {/* Compare link */}
@@ -418,7 +420,7 @@ export default function PricingPage() {
         </div>
       </main>
 
-      <footer className="text-center py-6 text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+      <footer className="text-center py-6 text-xs border-t" style={{ color: "#2a2040", borderColor: "#0f0d1e" }}>
         Quantra — quantum simulations run entirely in your browser
       </footer>
     </div>
