@@ -114,7 +114,7 @@ export default function DashboardPage() {
       <nav className="border-b border-white/5 bg-[#0d0b1a]/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <EntanglementLogo size={32} animate={false} />
+            <EntanglementLogo size={40} animate={true} />
             <span className="font-medium text-white/80">Quantra</span>
             <span className="text-white/20 text-sm">/</span>
             <span className="text-sm text-white/50">Dashboard</span>
