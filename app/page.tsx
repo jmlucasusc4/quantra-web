@@ -1,13 +1,13 @@
 "use client";
 export const dynamic = "force-dynamic";
 import { useState, useEffect, Suspense } from "react";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import nextDynamic from "next/dynamic";
 import { useAuth } from "@/lib/auth-context";
 import { useSubscription } from "@/hooks/useSubscription";
 import UpgradeGate from "./components/UpgradeGate";
 import { tierAtLeast, type Tier } from "@/lib/stripe";
+import { EntanglementLogo } from "./components/ui/EntanglementLogo";
 import { DemoSidebar } from "./components/sidebar/DemoSidebar";
 import { QuantumTooltip } from "./components/ui/QuantumTooltip";
 import { LandingPage } from "./components/LandingPage";
@@ -35,8 +35,9 @@ function WithTooltips({ text }: { text: string }) {
 // Map DemoSidebar slugs → page ALGORITHMS keys
 const SLUG_TO_KEY: Record<string, string> = {
   'superposition':        'superposition',
-  'entanglement':         'entanglement',
-  'bloch-sphere':         'bloch',
+  'entanglement':           'entanglement',
+  'entangled-bloch-spheres':'entangled-bloch',
+  'bloch-sphere':           'bloch',
   'deutsch-jozsa':        'deutsch',
   'qrng':                 'qrng',
   'classical-vs-quantum': 'speed',
@@ -68,7 +69,8 @@ const QRNG              = nextDynamic(() => import("./components/algorithms/QRNG
 const HarvestNow        = nextDynamic(() => import("./components/algorithms/HarvestNow"),        { ssr: false });
 const SimonsAlgorithm   = nextDynamic(() => import("./components/algorithms/SimonsAlgorithm"),   { ssr: false });
 const CircuitBuilder    = nextDynamic(() => import("./components/algorithms/CircuitBuilder"),    { ssr: false });
-const CRYSTALSKyber     = nextDynamic(() => import("./components/algorithms/CRYSTALSKyber"),     { ssr: false });
+const CRYSTALSKyber          = nextDynamic(() => import("./components/algorithms/CRYSTALSKyber"),          { ssr: false });
+const EntangledBlochSpheres  = nextDynamic(() => import("./components/algorithms/EntangledBlochSpheres"),  { ssr: false });
 
 type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
@@ -100,6 +102,12 @@ const ALGORITHMS: {
     description: "Determines whether a black-box function is constant or balanced in a single oracle query. Classical algorithms require up to 2^(n-1)+1 queries.",
     whyItMatters: "The first proof that quantum computers can solve certain problems exponentially faster than classical computers. It laid the theoretical groundwork for Shor's and Grover's algorithms.",
     component: DeutschJozsa,
+  },
+  {
+    key: "entangled-bloch", label: "Entangled Bloch Spheres", difficulty: "Beginner", requiredTier: "free",
+    description: "Two entangled qubits in a Bell state. Select a Bell state, then measure Qubit A — Qubit B collapses instantly to its correlated outcome.",
+    whyItMatters: "Entangled Bloch spheres make quantum non-locality tangible: measuring one particle forces the other into a correlated state regardless of separation. This is the physical basis of quantum key distribution — any eavesdropper disturbs the entanglement and is detectable.",
+    component: EntangledBlochSpheres,
   },
   {
     key: "bloch", label: "Bloch Sphere", difficulty: "Beginner", requiredTier: "free",
@@ -217,7 +225,7 @@ function HomeInner() {
       <header className="sticky top-0 z-10 border-b border-white/10 backdrop-blur-xl" style={{ background: "rgba(0,0,0,0.3)" }}>
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Image src="/quantra-logo-nav.png" alt="Quantra" width={32} height={32} />
+            <EntanglementLogo size={32} animate={false} />
             <span className="font-bold text-lg tracking-tight text-white">Quantra</span>
           </div>
           <div className="flex items-center gap-4">

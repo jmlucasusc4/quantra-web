@@ -15,8 +15,9 @@ interface Demo {
 
 const DEMOS: Demo[] = [
   { slug: 'superposition',        name: 'Superposition demo',        diff: 'Beginner',     tier: 'free' },
-  { slug: 'entanglement',         name: 'Entanglement demo',          diff: 'Beginner',     tier: 'free' },
-  { slug: 'bloch-sphere',         name: 'Bloch sphere',               diff: 'Beginner',     tier: 'free' },
+  { slug: 'entanglement',          name: 'Entanglement demo',          diff: 'Beginner',     tier: 'free' },
+  { slug: 'entangled-bloch-spheres', name: 'Entangled Bloch spheres', diff: 'Beginner',     tier: 'free' },
+  { slug: 'bloch-sphere',          name: 'Bloch sphere',              diff: 'Beginner',     tier: 'free' },
   { slug: 'deutsch-jozsa',        name: 'Deutsch-Jozsa',              diff: 'Beginner',     tier: 'free' },
   { slug: 'qrng',                 name: 'Quantum Random N.',          diff: 'Beginner',     tier: 'free' },
   { slug: 'classical-vs-quantum', name: 'Classical vs quantum',       diff: 'Beginner',     tier: 'free' },
