@@ -1,12 +1,12 @@
 "use client";
 import { useEffect } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useProgress } from "@/hooks/useProgress";
 import { useActivity, activityLabel, relativeTime } from "@/hooks/useActivity";
 import type { Tier } from "@/lib/stripe";
+import { EntanglementLogo } from "@/app/components/ui/EntanglementLogo";
 import { EmptyDashboardState } from "@/app/components/dashboard/EmptyState";
 import { OnboardingModal } from "@/app/components/onboarding/OnboardingModal";
 import { SkillTree } from "@/app/components/dashboard/SkillTree";
@@ -114,7 +114,7 @@ export default function DashboardPage() {
       <nav className="border-b border-white/5 bg-[#0d0b1a]/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Image src="/quantra-logo-nav.png" alt="Quantra" width={32} height={32} />
+            <EntanglementLogo size={32} animate={false} />
             <span className="font-medium text-white/80">Quantra</span>
             <span className="text-white/20 text-sm">/</span>
             <span className="text-sm text-white/50">Dashboard</span>
