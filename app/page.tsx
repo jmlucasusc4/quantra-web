@@ -229,6 +229,10 @@ function HomeInner() {
             <span className="font-bold text-lg tracking-tight text-white">Quantra</span>
           </div>
           <div className="flex items-center gap-4">
+            <button onClick={() => router.push("/standards")}
+              className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">
+              Standards
+            </button>
             <button onClick={() => router.push("/dashboard")}
               className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">
               Dashboard
