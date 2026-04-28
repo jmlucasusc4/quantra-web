@@ -8,6 +8,7 @@ import { useActivity, activityLabel, relativeTime } from "@/hooks/useActivity";
 import type { Tier } from "@/lib/stripe";
 import Image from "next/image";
 import { saveCertificate, makeCertId } from "@/lib/certificates";
+import { PATHS, pathProgress, nextDemo } from "@/lib/paths";
 import { EmptyDashboardState } from "@/app/components/dashboard/EmptyState";
 import { QuantumCertificate } from "@/app/components/dashboard/QuantumCertificate";
 import { OnboardingModal } from "@/app/components/onboarding/OnboardingModal";
@@ -75,6 +76,51 @@ const LEVEL_COLOR = {
   proficient:  "text-purple-400",
   expert:      "text-yellow-400",
 };
+
+// ── Learning Paths Widget ─────────────────────────────────────────────────────
+
+function LearningPathsWidget({ completedDemos }: { completedDemos: string[] }) {
+  const router = useRouter();
+  return (
+    <Card>
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-xs text-white/40 uppercase tracking-widest">Learning Paths</p>
+        <button onClick={() => router.push("/paths")} className="text-xs text-purple-400 hover:text-purple-300 cursor-pointer transition-colors">
+          View all →
+        </button>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {PATHS.map(path => {
+          const pct  = pathProgress(path, completedDemos);
+          const next = nextDemo(path, completedDemos);
+          return (
+            <button
+              key={path.id}
+              onClick={() => router.push(`/paths/${path.id}`)}
+              className="text-left rounded-xl border border-white/5 p-4 hover:border-purple-500/30 transition-colors cursor-pointer"
+              style={{ background: "#0d0b1a" }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold" style={{ color: path.color }}>{path.name}</span>
+                <span className="text-xs text-white/30">{path.demos.length} demos</span>
+              </div>
+              <p className="text-xs text-white/40 mb-3 line-clamp-1">{path.tagline}</p>
+              <div className="h-1.5 rounded-full bg-white/5 overflow-hidden mb-2">
+                <div className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${pct}%`, background: `linear-gradient(90deg, #7c3aed, ${path.color})` }} />
+              </div>
+              <div className="flex justify-between">
+                <span className="text-xs text-white/30">{pct}% complete</span>
+                {pct < 100 && next && <span className="text-xs" style={{ color: path.color }}>Continue →</span>}
+                {pct === 100 && <span className="text-xs text-green-400">✓ Done</span>}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
@@ -222,6 +268,9 @@ export default function DashboardPage() {
           totalKeysGenerated={keysGen}
           completedCount={completedDemos.length}
         />
+
+        {/* ── Learning Paths ────────────────────────────────────────── */}
+        <LearningPathsWidget completedDemos={completedDemos} />
 
         {/* ── Quick Resume ──────────────────────────────────────────── */}
         <QuickResume activities={activities} />
