@@ -7,6 +7,7 @@ import { useProgress } from "@/hooks/useProgress";
 import { useActivity, activityLabel, relativeTime } from "@/hooks/useActivity";
 import type { Tier } from "@/lib/stripe";
 import Image from "next/image";
+import { saveCertificate, makeCertId } from "@/lib/certificates";
 import { EmptyDashboardState } from "@/app/components/dashboard/EmptyState";
 import { QuantumCertificate } from "@/app/components/dashboard/QuantumCertificate";
 import { OnboardingModal } from "@/app/components/onboarding/OnboardingModal";
@@ -115,10 +116,17 @@ export default function DashboardPage() {
     'simons-algorithm','shors-algorithm','quantum-teleportation',
   ];
   const allComplete = ALL_DEMO_SLUGS.every(s => completedDemos.includes(s));
-  const certId = `QRC-${user.uid.slice(0,4).toUpperCase()}-${user.uid.slice(4,8).toUpperCase()}`;
-  const completedAt = allComplete
-    ? new Date().toISOString()
-    : new Date().toISOString();
+  const certId = makeCertId(user.uid);
+
+  useEffect(() => {
+    if (!allComplete) return;
+    saveCertificate({
+      certId,
+      uid: user.uid,
+      displayName: user.displayName ?? user.email ?? "Quantum Scholar",
+      readiness,
+    }).catch(() => {});
+  }, [allComplete, certId, user.uid, user.displayName, user.email, readiness]);
 
   return (
     <div className="min-h-screen bg-[#0d0b1a] text-white">
@@ -148,7 +156,6 @@ export default function DashboardPage() {
           <QuantumCertificate
             displayName={user.displayName ?? user.email ?? "Quantum Scholar"}
             readiness={readiness}
-            completedAt={completedAt}
             certId={certId}
           />
         )}

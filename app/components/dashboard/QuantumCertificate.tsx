@@ -5,7 +5,6 @@ import type { ReadinessResult } from '@/lib/readiness'
 interface Props {
   displayName: string
   readiness: ReadinessResult
-  completedAt: string   // ISO date string
   certId: string
 }
 
@@ -22,6 +21,14 @@ const CATEGORIES = [
   { key: 'riskScore',       label: 'Risk Analysis' },
   { key: 'pqcScore',        label: 'Post-Quantum' },
 ] as const
+
+const NIST_STANDARDS = [
+  { id: 'FIPS 203',        name: 'ML-KEM (CRYSTALS-Kyber)' },
+  { id: 'FIPS 204',        name: 'ML-DSA (CRYSTALS-Dilithium)' },
+  { id: 'NIST SP 800-208', name: 'Post-Quantum Cryptography' },
+  { id: 'NIST SP 800-57',  name: 'Key Management' },
+  { id: 'CISA PQC',        name: 'Migration Guidance' },
+]
 
 function ScoreBar({ label, value }: { label: string; value: number }) {
   return (
@@ -45,8 +52,8 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
   )
 }
 
-export function QuantumCertificate({ displayName, readiness, completedAt, certId }: Props) {
-  const issued = new Date(completedAt).toLocaleDateString('en-US', {
+export function QuantumCertificate({ displayName, readiness, certId }: Props) {
+  const issued = new Date().toLocaleDateString('en-US', {
     month: 'long', day: 'numeric', year: 'numeric',
   })
 
@@ -55,7 +62,7 @@ export function QuantumCertificate({ displayName, readiness, completedAt, certId
   }
 
   async function handleCopy() {
-    await navigator.clipboard.writeText(certId)
+    await navigator.clipboard.writeText(`https://quantra.space/verify/${certId}`)
   }
 
   return (
@@ -184,6 +191,21 @@ export function QuantumCertificate({ displayName, readiness, completedAt, certId
             ))}
           </div>
 
+          {/* NIST alignment */}
+          <div style={{ background: 'rgba(124,58,237,0.06)', border: '1px solid rgba(109,40,217,0.25)', borderRadius: 12, padding: '14px 18px', marginBottom: 24 }}>
+            <div style={{ fontSize: 9, letterSpacing: '.15em', textTransform: 'uppercase', color: '#6b5e8c', marginBottom: 10, fontWeight: 600 }}>
+              Standards Alignment
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {NIST_STANDARDS.map(s => (
+                <div key={s.id} style={{ background: '#110e24', border: '1px solid #2a2450', borderRadius: 6, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: '#d4af6a', fontFamily: 'ui-monospace, monospace' }}>{s.id}</span>
+                  <span style={{ fontSize: 9, color: '#6b5e8c' }}>{s.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Divider */}
           <div style={{
             height: 1, margin: '0 0 20px',
@@ -200,7 +222,10 @@ export function QuantumCertificate({ displayName, readiness, completedAt, certId
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 9, color: '#6b5e8c', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 2 }}>
-                quantra.space
+                Verify at
+              </div>
+              <div style={{ fontSize: 10, color: '#7c6aad', fontFamily: 'ui-monospace, monospace' }}>
+                quantra.space/verify/{certId}
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
@@ -234,7 +259,7 @@ export function QuantumCertificate({ displayName, readiness, completedAt, certId
               fontSize: 13, cursor: 'pointer',
             }}
           >
-            Copy Cert ID
+            Copy Verify Link
           </button>
         </div>
       </div>
