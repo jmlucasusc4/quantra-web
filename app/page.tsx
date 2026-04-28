@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useSubscription } from "@/hooks/useSubscription";
 import UpgradeGate from "./components/UpgradeGate";
 import { tierAtLeast, type Tier } from "@/lib/stripe";
-import { EntanglementLogo } from "./components/ui/EntanglementLogo";
+import Image from "next/image";
 import { DemoSidebar } from "./components/sidebar/DemoSidebar";
 import { QuantumTooltip } from "./components/ui/QuantumTooltip";
 import { LandingPage } from "./components/LandingPage";
@@ -225,7 +225,7 @@ function HomeInner() {
       <header className="sticky top-0 z-10 border-b border-white/10 backdrop-blur-xl" style={{ background: "rgba(0,0,0,0.3)" }}>
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <EntanglementLogo size={40} animate={true} />
+            <Image src="/quantra-mark.png" alt="Quantra" width={53} height={40} />
             <span className="font-bold text-lg tracking-tight text-white">Quantra</span>
           </div>
           <div className="flex items-center gap-4">
