@@ -2,6 +2,7 @@
 // Drop this into your dashboard page — renders when completedDemos.length === 0
 'use client'
 
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 const FIRST_DEMOS = [
@@ -22,15 +23,8 @@ export function EmptyDashboardState() {
       textAlign: 'center',
       marginBottom: 20,
     }}>
-      {/* Atom icon */}
-      <div style={{
-        width: 64, height: 64, borderRadius: '50%',
-        background: '#4c1d95',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        margin: '0 auto 20px',
-        fontSize: 28,
-      }}>
-        ⚛
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+        <Image src="/quantra-mark.png" alt="Quantra" width={106} height={80} />
       </div>
 
       <h2 style={{ fontSize: 20, fontWeight: 500, color: '#a78bfa', marginBottom: 8 }}>
