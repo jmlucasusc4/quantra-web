@@ -399,9 +399,57 @@ export default function PricingPage() {
           <p className="text-sm text-white/40">
             Not sure which plan?{" "}
             <a href="#compare" className="text-purple-400 hover:text-purple-300 transition-colors">
-              Compare all plans in detail ↓
+              Compare all features ↓
             </a>
           </p>
+        </div>
+
+        {/* Feature comparison table */}
+        <div id="compare" className="mt-16 overflow-x-auto -mx-4 px-4">
+          <p className="text-xs font-bold tracking-widest uppercase mb-6" style={{ color: "rgba(167,139,250,0.6)" }}>Full Comparison</p>
+          <table className="w-full text-sm" style={{ minWidth: 640, borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <th className="text-left pb-4 text-white/30 font-normal text-xs w-1/3">Feature</th>
+                {["Free", "Pro", "Research", "Enterprise"].map(n => (
+                  <th key={n} className="pb-4 text-center font-semibold text-white/80 text-xs">{n}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["Superposition / Entanglement / Bloch", "✓","✓","✓","✓"],
+                ["Deutsch-Jozsa / Bernstein-Vazirani",   "✓","✓","✓","✓"],
+                ["256-bit QRNG",                         "✓","✓","✓","✓"],
+                ["Grover's search",                      "—","✓","✓","✓"],
+                ["BB84 / QKD protocol",                  "—","✓","✓","✓"],
+                ["CRYSTALS-Kyber (PQC)",                 "—","✓","✓","✓"],
+                ["Harvest-now simulator",                "—","✓","✓","✓"],
+                ["Full circuit builder",                 "—","✓","✓","✓"],
+                ["Shor's algorithm + RSA",               "—","—","✓","✓"],
+                ["Quantum teleportation",                "—","—","✓","✓"],
+                ["Simon's algorithm",                    "—","—","✓","✓"],
+                ["REST API access",                      "—","—","✓","✓"],
+                ["Bulk QRNG (up to 1 MB)",               "—","—","✓","✓"],
+                ["Org quantum risk reports",             "—","—","✓","✓"],
+                ["Team seats",                           "1","1","5","Unlimited"],
+                ["SSO / SAML",                           "—","—","—","✓"],
+                ["FIPS 140-3 compliance docs",           "—","—","—","✓"],
+                ["Dedicated instance",                   "—","—","—","✓"],
+                ["Custom SLA / whitelabeling",           "—","—","—","✓"],
+              ].map(([feature, ...cells], i) => (
+                <tr key={feature} style={{ borderTop: "1px solid rgba(255,255,255,0.05)", background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.015)" }}>
+                  <td className="py-2.5 pr-4 text-white/50 text-xs">{feature}</td>
+                  {cells.map((cell, ci) => (
+                    <td key={ci} className="py-2.5 text-center text-xs font-mono"
+                      style={{ color: cell === "—" ? "rgba(255,255,255,0.18)" : cell === "✓" ? "#a78bfa" : "#f0ebff" }}>
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* Trust badges */}

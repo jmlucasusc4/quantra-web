@@ -1,5 +1,7 @@
+'use client'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState, useRef } from 'react'
 
 const PAIN_POINTS = [
   {
@@ -77,6 +79,80 @@ const DIFFERENTIATORS = [
 const SECTORS = [
   'Financial Services', 'Defense & Government', 'Healthcare', 'Critical Infrastructure', 'Technology', 'Legal & Professional Services',
 ]
+
+const INPUT_STYLE = { background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 8, color: '#e2d9f3', padding: '11px 14px', fontSize: 13, outline: 'none', width: '100%' } as const
+
+function ContactForm() {
+  const [status, setStatus]   = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+  const [errMsg, setErrMsg]   = useState('')
+  const formRef               = useRef<HTMLFormElement>(null)
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setStatus('sending')
+    const fd = new FormData(e.currentTarget)
+    try {
+      const res = await fetch('/api/contact', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:      fd.get('name'),
+          email:     fd.get('email'),
+          org:       fd.get('org'),
+          team_size: fd.get('team_size'),
+          message:   fd.get('message'),
+        }),
+      })
+      const data = await res.json() as { ok?: boolean; error?: string }
+      if (data.ok) { setStatus('done'); formRef.current?.reset() }
+      else { setErrMsg(data.error ?? 'Something went wrong.'); setStatus('error') }
+    } catch {
+      setErrMsg('Network error — please try again.'); setStatus('error')
+    }
+  }
+
+  if (status === 'done') {
+    return (
+      <div style={{ background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 16, padding: '40px 32px', textAlign: 'center' }}>
+        <div style={{ fontSize: 32, marginBottom: 12 }}>✓</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: '#34d399', marginBottom: 8 }}>Message received</div>
+        <p style={{ fontSize: 14, color: '#8b7eb8', lineHeight: 1.7 }}>
+          We&apos;ll follow up within one business day to discuss your team&apos;s requirements.
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <form ref={formRef} onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12, textAlign: 'left' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <input placeholder="Name" name="name" required style={INPUT_STYLE} />
+        <input placeholder="Work email" name="email" type="email" required style={INPUT_STYLE} />
+      </div>
+      <input placeholder="Organization" name="org" style={INPUT_STYLE} />
+      <select name="team_size" style={{ ...INPUT_STYLE, color: '#8b7eb8' }}>
+        <option value="">Team size</option>
+        <option>1–10</option>
+        <option>11–50</option>
+        <option>51–200</option>
+        <option>200+</option>
+      </select>
+      <textarea
+        placeholder="What are you trying to accomplish? (e.g. PQC migration training, compliance prep, team upskilling)"
+        name="message" rows={4}
+        style={{ ...INPUT_STYLE, resize: 'vertical' }}
+      />
+      {status === 'error' && <p style={{ fontSize: 12, color: '#f87171', textAlign: 'center' }}>{errMsg}</p>}
+      <button
+        type="submit"
+        disabled={status === 'sending'}
+        style={{ background: 'linear-gradient(135deg,#7c3aed,#6d28d9)', border: 'none', color: '#fff', padding: '13px', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: status === 'sending' ? 'default' : 'pointer', opacity: status === 'sending' ? 0.7 : 1 }}
+      >
+        {status === 'sending' ? 'Sending…' : 'Send Message →'}
+      </button>
+    </form>
+  )
+}
 
 export default function EnterprisePage() {
   return (
@@ -235,38 +311,7 @@ export default function EnterprisePage() {
             Reach out to discuss pilots, team licensing, and NICCS listing.
           </p>
 
-          <form
-            action="mailto:jmlucasusc4@gmail.com"
-            method="get"
-            encType="text/plain"
-            style={{ display: 'flex', flexDirection: 'column', gap: 12, textAlign: 'left' }}
-          >
-            <input
-              name="subject"
-              defaultValue="Quantra Enterprise Inquiry"
-              type="hidden"
-            />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <input placeholder="Name" name="name" required style={{ background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 8, color: '#e2d9f3', padding: '11px 14px', fontSize: 13, outline: 'none' }} />
-              <input placeholder="Work email" name="email" type="email" required style={{ background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 8, color: '#e2d9f3', padding: '11px 14px', fontSize: 13, outline: 'none' }} />
-            </div>
-            <input placeholder="Organization" name="org" style={{ background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 8, color: '#e2d9f3', padding: '11px 14px', fontSize: 13, outline: 'none' }} />
-            <select name="team_size" style={{ background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 8, color: '#8b7eb8', padding: '11px 14px', fontSize: 13, outline: 'none' }}>
-              <option value="">Team size</option>
-              <option>1–10</option>
-              <option>11–50</option>
-              <option>51–200</option>
-              <option>200+</option>
-            </select>
-            <textarea placeholder="What are you trying to accomplish? (e.g. PQC migration training, compliance prep, team upskilling)" name="body" rows={4} style={{ background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 8, color: '#e2d9f3', padding: '11px 14px', fontSize: 13, outline: 'none', resize: 'vertical' as const }} />
-            <button type="submit" style={{ background: 'linear-gradient(135deg,#7c3aed,#6d28d9)', border: 'none', color: '#fff', padding: '13px', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-              Send Message →
-            </button>
-          </form>
-
-          <p style={{ fontSize: 11, color: '#2a2040', marginTop: 16 }}>
-            Or email directly: jmlucasusc4@gmail.com
-          </p>
+          <ContactForm />
         </div>
       </section>
 
