@@ -88,16 +88,24 @@ export default function UpgradeGate({ requiredTier, children }: Props) {
           </div>
           <div>
             <p className="font-bold text-white">
-              {TIER_LABELS[requiredTier]} feature
+              {!user ? "Free account required" : `${TIER_LABELS[requiredTier]} feature`}
             </p>
             <p className="text-sm text-white/50 mt-1">
-              This demo requires the {TIER_LABELS[requiredTier]} plan ({TIER_PRICE[requiredTier]}).
+              {!user
+                ? "Create a free account to unlock this demo."
+                : `This demo requires the ${TIER_LABELS[requiredTier]} plan (${TIER_PRICE[requiredTier]}).`}
             </p>
           </div>
 
           {error && <p className="text-red-400 text-xs">{error}</p>}
 
-          {requiredTier === "enterprise" ? (
+          {!user ? (
+            <Link href="/signup"
+              className="block py-2.5 px-5 rounded-xl font-semibold text-sm text-white"
+              style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)" }}>
+              Sign up free →
+            </Link>
+          ) : requiredTier === "enterprise" ? (
             <Link href="/pricing"
               className="block py-2.5 px-5 rounded-xl font-semibold text-sm text-white"
               style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)" }}>

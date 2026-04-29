@@ -83,7 +83,7 @@ const PLANS: Plan[] = [
     badge: "Most Popular",
     accentColor: "#a855f7",
     accentBg: "rgba(124,58,237,0.18)",
-    ctaLabel: "Start Pro Trial",
+    ctaLabel: "Join Beta — Founding Member",
     ctaStyle: "primary",
     priceKey: "PRO",
     sections: [
@@ -117,7 +117,7 @@ const PLANS: Plan[] = [
     tagline: "Advanced algorithms and API access for teams and researchers.",
     accentColor: "#f59e0b",
     accentBg: "rgba(245,158,11,0.12)",
-    ctaLabel: "Start Research Trial",
+    ctaLabel: "Join Research Beta",
     ctaStyle: "outline",
     priceKey: "RESEARCH",
     sections: [
@@ -264,7 +264,8 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
               </>
             )}
           </div>
-          {perMonth && <p className="text-xs text-white/30 mb-2">{perMonth}</p>}
+          {perMonth && <p className="text-xs text-white/30 mb-1">{perMonth}</p>}
+          {plan.badge && <p className="text-xs mb-2" style={{ color: "rgba(167,139,250,0.7)" }}>Founding member pricing — locked for life</p>}
           <p className="text-sm text-white/50 leading-snug">{plan.tagline}</p>
         </div>
 

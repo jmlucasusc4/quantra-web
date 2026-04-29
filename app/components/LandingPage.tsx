@@ -50,7 +50,7 @@ export function LandingPage() {
         style={{ background: "rgba(0,0,0,0.3)" }}>
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Image src="/quantra-logo-nav.png" alt="Quantra" width={32} height={32} />
+            <Image src="/quantra-mark.png" alt="Quantra" width={53} height={40} />
             <span className="font-bold text-lg tracking-tight text-white">Quantra</span>
           </div>
           <div className="flex items-center gap-3">
@@ -131,6 +131,32 @@ export function LandingPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* ── NIST Proof of Work ── */}
+      <section className="max-w-5xl mx-auto px-4 pb-16 w-full">
+        <p className="text-xs font-bold tracking-widest uppercase text-center mb-6" style={{ color: "rgba(212,175,106,0.7)" }}>
+          Built on Published Standards
+        </p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { label: "FIPS 203", sub: "ML-KEM (CRYSTALS-Kyber)", href: "https://csrc.nist.gov/pubs/fips/203/final", badge: "Finalized Aug 2024" },
+            { label: "FIPS 204", sub: "ML-DSA (CRYSTALS-Dilithium)", href: "https://csrc.nist.gov/pubs/fips/204/final", badge: "Finalized Aug 2024" },
+            { label: "FIPS 205", sub: "SLH-DSA (SPHINCS+)", href: "https://csrc.nist.gov/pubs/fips/205/final", badge: "Finalized Aug 2024" },
+            { label: "NIST IR 8547", sub: "Transition to PQC Standards", href: "https://csrc.nist.gov/pubs/ir/8547/ipd", badge: "Initial Public Draft" },
+          ].map(s => (
+            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+              className="glass p-4 flex flex-col gap-1.5 hover:border-yellow-500/30 transition-colors group"
+              style={{ textDecoration: "none" }}>
+              <span className="font-mono text-sm font-bold group-hover:text-yellow-300 transition-colors" style={{ color: "#d4af6a" }}>{s.label}</span>
+              <span className="text-xs text-white/50 leading-snug">{s.sub}</span>
+              <span className="text-[10px] mt-1" style={{ color: "rgba(52,211,153,0.7)" }}>{s.badge} ↗</span>
+            </a>
+          ))}
+        </div>
+        <p className="text-center text-xs mt-4" style={{ color: "rgba(255,255,255,0.25)" }}>
+          Every simulation maps to a specific NIST publication. Click any card to read the standard.
+        </p>
       </section>
 
       {/* ── Algorithm preview ── */}

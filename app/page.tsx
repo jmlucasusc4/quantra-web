@@ -1,16 +1,16 @@
 "use client";
 export const dynamic = "force-dynamic";
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import nextDynamic from "next/dynamic";
 import { useAuth } from "@/lib/auth-context";
 import { useSubscription } from "@/hooks/useSubscription";
 import UpgradeGate from "./components/UpgradeGate";
-import { tierAtLeast, type Tier } from "@/lib/stripe";
+import { type Tier } from "@/lib/stripe";
 import Image from "next/image";
+import Link from "next/link";
 import { DemoSidebar } from "./components/sidebar/DemoSidebar";
 import { QuantumTooltip } from "./components/ui/QuantumTooltip";
-import { LandingPage } from "./components/LandingPage";
 
 // Auto-wrap known quantum terms in a string with tooltips
 const TOOLTIP_TERMS = [
@@ -205,7 +205,7 @@ function HomeInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialDemo = searchParams.get('demo');
-  const initialKey = initialDemo ? (SLUG_TO_KEY[initialDemo] ?? 'superposition') : 'superposition';
+  const initialKey = initialDemo ? (SLUG_TO_KEY[initialDemo] ?? 'bloch') : 'bloch';
   const [selected, setSelected] = useState(initialKey);
 
   if (loading) return (
@@ -214,13 +214,21 @@ function HomeInner() {
     </div>
   );
 
-  if (!user) return <LandingPage />;
-
+  const isGuest = !user;
   const algo = ALGORITHMS.find(a => a.key === selected)!;
   const AlgoComponent = algo.component;
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Guest banner */}
+      {isGuest && (
+        <div className="text-center text-xs py-2 px-4" style={{ background: "rgba(124,58,237,0.18)", borderBottom: "1px solid rgba(124,58,237,0.3)", color: "rgba(255,255,255,0.65)" }}>
+          Exploring as guest — free demos open, no login needed.{" "}
+          <Link href="/signup" className="font-semibold hover:underline" style={{ color: "#a78bfa" }}>Sign up free</Link>
+          {" "}to save progress &amp; unlock 10 more simulations.
+        </div>
+      )}
+
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-white/10 backdrop-blur-xl" style={{ background: "rgba(0,0,0,0.3)" }}>
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -229,27 +237,22 @@ function HomeInner() {
             <span className="font-bold text-lg tracking-tight text-white">Quantra</span>
           </div>
           <div className="flex items-center gap-4">
-            <button onClick={() => router.push("/paths")}
-              className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">
-              Paths
-            </button>
-            <button onClick={() => router.push("/standards")}
-              className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">
-              Standards
-            </button>
-            <button onClick={() => router.push("/dashboard")}
-              className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">
-              Dashboard
-            </button>
-            <button onClick={() => router.push("/enterprise")}
-              className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">
-              Enterprise
-            </button>
-            <span className="text-xs text-white/30 hidden sm:block">{user.email}</span>
-            <button onClick={() => logout().then(() => router.push("/login"))}
-              className="text-xs text-white/40 hover:text-white transition-colors cursor-pointer">
-              Log out
-            </button>
+            {isGuest ? (
+              <>
+                <Link href="/pricing" className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Pricing</Link>
+                <Link href="/login"   className="text-xs text-white/50 hover:text-white transition-colors">Log in</Link>
+                <Link href="/signup"  className="text-xs font-semibold px-3 py-1.5 rounded-lg text-white" style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)" }}>Sign up free</Link>
+              </>
+            ) : (
+              <>
+                <button onClick={() => router.push("/paths")}     className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">Paths</button>
+                <button onClick={() => router.push("/standards")} className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">Standards</button>
+                <button onClick={() => router.push("/dashboard")} className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">Dashboard</button>
+                <button onClick={() => router.push("/enterprise")} className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">Enterprise</button>
+                <span className="text-xs text-white/30 hidden sm:block">{user!.email}</span>
+                <button onClick={() => logout().then(() => router.push("/login"))} className="text-xs text-white/40 hover:text-white transition-colors cursor-pointer">Log out</button>
+              </>
+            )}
           </div>
         </div>
       </header>
