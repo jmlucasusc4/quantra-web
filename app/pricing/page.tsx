@@ -200,6 +200,9 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr]   = useState("");
 
+  // Clear error when billing period toggles
+  useEffect(() => { setErr(""); }, [yearly]);
+
   async function handleCta() {
     console.log("Button clicked");
     if (isFree) { router.push("/signup"); return; }
@@ -214,7 +217,7 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
     try {
       const suffix  = yearly ? "YEARLY" : "QUARTERLY";
       const priceId = (PRICE_IDS[`${plan.priceKey}_${suffix}`] ?? "").trim();
-      console.log("Price ID:", priceId);
+      if (!priceId) { setErr("Price not configured — contact support."); setBusy(false); return; }
 
       const idToken = await auth.currentUser?.getIdToken();
       console.log("[Stripe checkout] priceId:", priceId, "idToken:", idToken?.slice(0, 20));
