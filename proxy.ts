@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Routes that require authentication
-const PROTECTED = ["/", "/dashboard"];
+const PROTECTED = ["/dashboard"];
 
 // Routes that are always public
 const PUBLIC = ["/login", "/signup", "/reset-password", "/pricing", "/api"];

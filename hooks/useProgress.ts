@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
-import { doc, updateDoc, arrayUnion, arrayRemove, onSnapshot, increment } from 'firebase/firestore'
+import { doc, updateDoc, setDoc, arrayUnion, arrayRemove, onSnapshot, increment } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
 import { computeReadiness, ReadinessResult } from '@/lib/readiness'
 
@@ -31,13 +31,19 @@ export function useProgress(): ProgressState {
   useEffect(() => {
     if (!user) { setLoading(false); return }
 
-    const unsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
-      const data = snap.data()
-      const demos: string[] = data?.completedDemos ?? []
-      setCompletedDemos(demos)
-      setReadiness(computeReadiness(demos))
-      setLoading(false)
-    })
+    const unsub = onSnapshot(
+      doc(db, 'users', user.uid),
+      (snap) => {
+        const data = snap.data()
+        const demos: string[] = data?.completedDemos ?? []
+        setCompletedDemos(demos)
+        setReadiness(computeReadiness(demos))
+        setLoading(false)
+      },
+      () => {
+        setLoading(false)
+      },
+    )
 
     return () => unsub()
   }, [user])
@@ -53,13 +59,30 @@ export function useProgress(): ProgressState {
     setCompletedDemos(newCompleted)
     setReadiness(newReadiness)
 
-    await updateDoc(userRef, {
-      completedDemos: arrayUnion(slug),
-      totalSimsRun: increment(1),
-      readinessScore: newReadiness.total,
-      readinessBreakdown: newReadiness.breakdown,
-      updatedAt: Date.now(),
-    })
+    try {
+      await updateDoc(userRef, {
+        completedDemos: arrayUnion(slug),
+        totalSimsRun: increment(1),
+        readinessScore: newReadiness.total,
+        readinessBreakdown: newReadiness.breakdown,
+        updatedAt: Date.now(),
+      })
+    } catch {
+      // Doc doesn't exist yet — bootstrap it (e.g. pre-fix signups or social auth edge cases)
+      await setDoc(userRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        tier: 'free',
+        completedDemos: newCompleted,
+        totalSimsRun: 1,
+        totalKeysGenerated: 0,
+        readinessScore: newReadiness.total,
+        readinessBreakdown: newReadiness.breakdown,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      })
+    }
 
     // Append to activity feed
     const { addDoc, collection, serverTimestamp } = await import('firebase/firestore')

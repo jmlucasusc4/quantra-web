@@ -42,7 +42,20 @@ export default function SignUpPage() {
       if (auth.currentUser) {
         const name = firstName.trim();
         await updateProfile(auth.currentUser, { displayName: name });
-        await setDoc(doc(db, "users", auth.currentUser.uid), { displayName: name }, { merge: true });
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        await setDoc(userRef, {
+          uid: auth.currentUser.uid,
+          email: auth.currentUser.email,
+          displayName: name,
+          tier: "free",
+          completedDemos: [],
+          totalSimsRun: 0,
+          totalKeysGenerated: 0,
+          readinessScore: 0,
+          readinessBreakdown: { algorithmsScore: 0, cryptoScore: 0, riskScore: 0, pqcScore: 0 },
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
       }
       router.push("/");
     } catch (err: unknown) {
