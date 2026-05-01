@@ -36,10 +36,10 @@ export function tierAtLeast(userTier: Tier, required: Tier): boolean {
 /** Maps Stripe price IDs → subscription tier */
 export function tierFromPriceId(priceId: string): Tier {
   const map: Record<string, Tier> = {
-    [process.env.STRIPE_PRICE_PRO_QUARTERLY ?? ""]:      "pro",
-    [process.env.STRIPE_PRICE_PRO_YEARLY ?? ""]:         "pro",
-    [process.env.STRIPE_PRICE_RESEARCH_QUARTERLY ?? ""]: "research",
-    [process.env.STRIPE_PRICE_RESEARCH_YEARLY ?? ""]:    "research",
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_QUARTERLY ?? ""]:      "pro",
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY ?? ""]:         "pro",
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_RESEARCH_QUARTERLY ?? ""]: "research",
+    [process.env.NEXT_PUBLIC_STRIPE_PRICE_RESEARCH_YEARLY ?? ""]:    "research",
   };
   return map[priceId] ?? "free";
 }
