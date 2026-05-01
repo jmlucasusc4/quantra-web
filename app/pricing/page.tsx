@@ -238,22 +238,22 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
   }
 
   return (
-    <div className="flex flex-col rounded-2xl overflow-hidden relative"
+    <div className="flex flex-col rounded-2xl relative"
       style={{
         background: plan.badge ? "rgba(124,58,237,0.14)" : "#0d0b1a",
         border: `1px solid ${plan.badge ? "rgba(168,85,247,0.45)" : "#2a2450"}`,
         boxShadow: plan.badge ? "0 0 48px rgba(124,58,237,0.22)" : "none",
       }}>
       {plan.badge && (
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <span className="text-xs font-bold px-3 py-1 rounded-full"
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
+          <span className="text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap"
             style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)", color: "#fff" }}>
             {plan.badge}
           </span>
         </div>
       )}
 
-      <div className="p-6 flex flex-col flex-1">
+      <div className={`p-6 flex flex-col flex-1 ${plan.badge ? "pt-5" : ""}`}>
         {/* Header */}
         <div className="mb-5">
           <h2 className="text-lg font-bold text-white mb-1">{plan.name}</h2>
@@ -375,9 +375,9 @@ export default function PricingPage() {
           <div className="flex items-center justify-center gap-3 mt-4">
             <span className={`text-sm ${!yearly ? "text-white" : "text-white/40"}`}>Quarterly</span>
             <button onClick={() => setYearly(y => !y)}
-              className="w-12 h-6 rounded-full relative transition-colors cursor-pointer"
+              className="w-11 h-6 rounded-full relative transition-colors cursor-pointer overflow-hidden"
               style={{ background: yearly ? "#7c3aed" : "rgba(255,255,255,0.15)" }}>
-              <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${yearly ? "translate-x-7" : "translate-x-1"}`} />
+              <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${yearly ? "translate-x-6" : "translate-x-1"}`} />
             </button>
             <span className={`text-sm ${yearly ? "text-white" : "text-white/40"}`}>
               Yearly
@@ -391,7 +391,7 @@ export default function PricingPage() {
 
         {/* Plan grid */}
         <div className="overflow-x-auto -mx-4 px-4 pb-2">
-          <div className="grid gap-4 items-start" style={{ gridTemplateColumns: "repeat(4, minmax(220px, 1fr))", minWidth: 900 }}>
+          <div className="grid gap-4 items-start mt-6" style={{ gridTemplateColumns: "repeat(4, minmax(220px, 1fr))", minWidth: 900 }}>
             {PLANS.map(plan => (
               <PlanCard key={plan.name} plan={plan} yearly={yearly} />
             ))}
