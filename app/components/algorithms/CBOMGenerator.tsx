@@ -30,7 +30,7 @@ const PATTERNS: CryptoPattern[] = [
   // Quantum-critical (Shor's algorithm)
   {
     id: 'rsa', name: 'RSA',
-    patterns: [/\bRSA\b/g, /RSA[-_]?\d{3,4}/g, /pkcs[_\s]?1\b/gi, /rs256|rs384|rs512/gi, /rsaEncryption/gi],
+    patterns: [/\bRSA\b/gi, /RSA[-_]?\d{3,4}/gi, /pkcs[_\s]?1\b/gi, /rs256|rs384|rs512/gi, /rsaEncryption/gi],
     keyType: 'asymmetric', quantumRisk: 'critical', priority: 1,
     nistReplacement: 'ML-KEM (FIPS 203) for key exchange · ML-DSA (FIPS 204) for signing',
     description: 'Completely broken by Shor\'s algorithm. All key sizes (1024–4096 bit) at risk.',
