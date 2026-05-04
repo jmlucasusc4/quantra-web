@@ -29,6 +29,7 @@ const DEMOS: Demo[] = [
   { slug: 'circuit-builder',      name: 'Quantum circuit builder',    diff: 'Intermediate', tier: 'pro' },
   { slug: 'quantum-risk-auditor', name: 'Quantum risk auditor',       diff: 'Intermediate', tier: 'pro' },
   { slug: 'cbom-generator',       name: 'CBOM generator',             diff: 'Intermediate', tier: 'pro' },
+  { slug: 'pqc-switch',           name: 'PQC switch: RSA vs ML-KEM',  diff: 'Intermediate', tier: 'pro' },
   { slug: 'shors-algorithm',      name: "Shor's algorithm + RSA",     diff: 'Advanced',     tier: 'research' },
   { slug: 'quantum-teleportation',name: 'Quantum teleportation',      diff: 'Advanced',     tier: 'research' },
   { slug: 'simons-algorithm',     name: "Simon's algorithm",          diff: 'Advanced',     tier: 'research' },

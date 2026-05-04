@@ -52,6 +52,7 @@ const SLUG_TO_KEY: Record<string, string> = {
   'quantum-teleportation':'teleportation',
   'simons-algorithm':     'simon',
   'cbom-generator':       'cbom',
+  'pqc-switch':           'pqcswitch',
 };
 const KEY_TO_SLUG = Object.fromEntries(Object.entries(SLUG_TO_KEY).map(([s, k]) => [k, s]));
 
@@ -73,6 +74,7 @@ const CircuitBuilder    = nextDynamic(() => import("./components/algorithms/Circ
 const CRYSTALSKyber          = nextDynamic(() => import("./components/algorithms/CRYSTALSKyber"),          { ssr: false });
 const EntangledBlochSpheres  = nextDynamic(() => import("./components/algorithms/EntangledBlochSpheres"),  { ssr: false });
 const CBOMGenerator          = nextDynamic(() => import("./components/algorithms/CBOMGenerator"),          { ssr: false });
+const PQCSwitchDemo          = nextDynamic(() => import("./components/algorithms/PQCSwitchDemo"),          { ssr: false });
 
 type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
@@ -165,6 +167,12 @@ const ALGORITHMS: {
     description: "Audit your cryptographic stack for quantum vulnerability. Mark algorithms in use to see your risk level.",
     whyItMatters: "Most organizations have no inventory of which quantum-vulnerable algorithms they depend on. NIST's post-quantum standards (CRYSTALS-Kyber, Dilithium) are finalized — migration planning must begin now to meet compliance windows.",
     component: RiskAuditor,
+  },
+  {
+    key: "pqcswitch", label: "PQC Switch: RSA vs ML-KEM", difficulty: "Intermediate", requiredTier: "pro",
+    description: "Toggle between RSA and ML-KEM. Watch a quantum attack succeed against RSA — then fail completely against CRYSTALS-Kyber.",
+    whyItMatters: "Seeing the attack succeed makes the threat real. Seeing it fail on ML-KEM makes the solution obvious. This is the single most persuasive demonstration of why NIST finalized post-quantum standards in 2024.",
+    component: PQCSwitchDemo,
   },
   {
     key: "cbom", label: "CBOM Generator", difficulty: "Intermediate", requiredTier: "pro",
