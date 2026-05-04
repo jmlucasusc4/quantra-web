@@ -117,6 +117,9 @@ export function SocialAuthButton({ provider, mode = 'signin' }: Props) {
 
       router.push('/dashboard')
     } catch (err: any) {
+      if (err?.code === 'auth/cancelled-popup-request' || err?.code === 'auth/popup-closed-by-user') {
+        return; // user dismissed the popup — not an error
+      }
       setError(`${label} sign-in failed. Please try again.`)
       console.error(err)
     } finally {
