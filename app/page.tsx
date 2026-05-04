@@ -51,6 +51,7 @@ const SLUG_TO_KEY: Record<string, string> = {
   'shors-algorithm':      'shor',
   'quantum-teleportation':'teleportation',
   'simons-algorithm':     'simon',
+  'cbom-generator':       'cbom',
 };
 const KEY_TO_SLUG = Object.fromEntries(Object.entries(SLUG_TO_KEY).map(([s, k]) => [k, s]));
 
@@ -71,6 +72,7 @@ const SimonsAlgorithm   = nextDynamic(() => import("./components/algorithms/Simo
 const CircuitBuilder    = nextDynamic(() => import("./components/algorithms/CircuitBuilder"),    { ssr: false });
 const CRYSTALSKyber          = nextDynamic(() => import("./components/algorithms/CRYSTALSKyber"),          { ssr: false });
 const EntangledBlochSpheres  = nextDynamic(() => import("./components/algorithms/EntangledBlochSpheres"),  { ssr: false });
+const CBOMGenerator          = nextDynamic(() => import("./components/algorithms/CBOMGenerator"),          { ssr: false });
 
 type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
@@ -163,6 +165,12 @@ const ALGORITHMS: {
     description: "Audit your cryptographic stack for quantum vulnerability. Mark algorithms in use to see your risk level.",
     whyItMatters: "Most organizations have no inventory of which quantum-vulnerable algorithms they depend on. NIST's post-quantum standards (CRYSTALS-Kyber, Dilithium) are finalized — migration planning must begin now to meet compliance windows.",
     component: RiskAuditor,
+  },
+  {
+    key: "cbom", label: "CBOM Generator", difficulty: "Intermediate", requiredTier: "pro",
+    description: "Scan source code or config files for cryptographic algorithms. Generates a Cryptographic Bill of Materials with quantum risk ratings and a CycloneDX-compatible JSON export.",
+    whyItMatters: "You can't migrate what you can't find. A CBOM is the first step in every post-quantum migration — it surfaces every RSA key, SHA-1 hash, and AES-128 block cipher hidden across your codebase so you can prioritize remediation before NIST compliance deadlines arrive.",
+    component: CBOMGenerator,
   },
   // ── Research tier ──────────────────────────────────────────────────
   {
