@@ -19,9 +19,17 @@ export default function BB84() {
         <span className="text-sm text-white/60">Eve (eavesdropper)</span>
         <button
           onClick={() => setEvePresent(e => !e)}
-          className={`w-12 h-6 rounded-full transition-colors relative ${evePresent ? "bg-red-500" : "bg-white/20"}`}
+          style={{
+            width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer",
+            background: evePresent ? "#ef4444" : "rgba(255,255,255,0.2)",
+            position: "relative", flexShrink: 0, transition: "background 0.2s",
+          }}
         >
-          <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${evePresent ? "translate-x-7" : "translate-x-1"}`} />
+          <span style={{
+            position: "absolute", top: 3, left: evePresent ? 23 : 3,
+            width: 18, height: 18, borderRadius: "50%", background: "#fff",
+            transition: "left 0.2s", display: "block",
+          }} />
         </button>
       </div>
 
