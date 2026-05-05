@@ -53,6 +53,7 @@ const SLUG_TO_KEY: Record<string, string> = {
   'simons-algorithm':     'simon',
   'cbom-generator':       'cbom',
   'pqc-switch':           'pqcswitch',
+  'password-analyzer':    'pwanalyzer',
 };
 const KEY_TO_SLUG = Object.fromEntries(Object.entries(SLUG_TO_KEY).map(([s, k]) => [k, s]));
 
@@ -74,7 +75,8 @@ const CircuitBuilder    = nextDynamic(() => import("./components/algorithms/Circ
 const CRYSTALSKyber          = nextDynamic(() => import("./components/algorithms/CRYSTALSKyber"),          { ssr: false });
 const EntangledBlochSpheres  = nextDynamic(() => import("./components/algorithms/EntangledBlochSpheres"),  { ssr: false });
 const CBOMGenerator          = nextDynamic(() => import("./components/algorithms/CBOMGenerator"),          { ssr: false });
-const PQCSwitchDemo          = nextDynamic(() => import("./components/algorithms/PQCSwitchDemo"),          { ssr: false });
+const PQCSwitchDemo              = nextDynamic(() => import("./components/algorithms/PQCSwitchDemo"),              { ssr: false });
+const QuantumPasswordAnalyzer    = nextDynamic(() => import("./components/algorithms/QuantumPasswordAnalyzer"),    { ssr: false });
 
 type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
@@ -169,6 +171,12 @@ const ALGORITHMS: {
     component: RiskAuditor,
   },
   {
+    key: "pwanalyzer", label: "Quantum Password Analyzer", difficulty: "Beginner", requiredTier: "free",
+    description: "Type any password to see how long a quantum computer would take to crack it using Grover's algorithm — and whether you meet NIST's post-quantum security threshold.",
+    whyItMatters: "Grover's algorithm gives quantum computers a quadratic speedup over classical brute-force. A password that takes a classical attacker millions of years might take a quantum computer days. Most people have no idea where they stand.",
+    component: QuantumPasswordAnalyzer,
+  },
+  {
     key: "pqcswitch", label: "PQC Switch: RSA vs ML-KEM", difficulty: "Intermediate", requiredTier: "pro",
     description: "Toggle between RSA and ML-KEM. Watch a quantum attack succeed against RSA — then fail completely against CRYSTALS-Kyber.",
     whyItMatters: "Seeing the attack succeed makes the threat real. Seeing it fail on ML-KEM makes the solution obvious. This is the single most persuasive demonstration of why NIST finalized post-quantum standards in 2024.",
@@ -221,7 +229,7 @@ function HomeInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialDemo = searchParams.get('demo');
-  const initialKey = initialDemo ? (SLUG_TO_KEY[initialDemo] ?? 'bloch') : 'bloch';
+  const initialKey = initialDemo ? (SLUG_TO_KEY[initialDemo] ?? 'speed') : 'speed';
   const [selected, setSelected] = useState(initialKey);
 
   if (loading) return (

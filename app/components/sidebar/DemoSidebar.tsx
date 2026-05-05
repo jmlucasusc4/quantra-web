@@ -20,6 +20,7 @@ const DEMOS: Demo[] = [
   { slug: 'bloch-sphere',          name: 'Bloch sphere',              diff: 'Beginner',     tier: 'free' },
   { slug: 'deutsch-jozsa',        name: 'Deutsch-Jozsa',              diff: 'Beginner',     tier: 'free' },
   { slug: 'qrng',                 name: 'Quantum Random N.',          diff: 'Beginner',     tier: 'free' },
+  { slug: 'password-analyzer',   name: 'Quantum password analyzer',  diff: 'Beginner',     tier: 'free' },
   { slug: 'classical-vs-quantum', name: 'Classical vs quantum',       diff: 'Beginner',     tier: 'free' },
   { slug: 'grovers-search',       name: "Grover's search",            diff: 'Intermediate', tier: 'pro' },
   { slug: 'bb84-protocol',        name: 'BB84 protocol (QKD)',        diff: 'Intermediate', tier: 'pro' },
