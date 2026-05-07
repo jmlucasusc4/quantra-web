@@ -89,6 +89,19 @@ export default function LoginPage() {
           No account?{" "}
           <Link href="/signup" className="text-purple-400/80 hover:text-purple-300 font-medium transition-colors">Sign Up</Link>
         </p>
+
+        <div className="flex items-center justify-center gap-3 flex-wrap pt-1 border-t border-white/[0.06]">
+          {[
+            "🔒 256-bit encrypted",
+            "⚡ Quantum-ready curriculum",
+            "🎓 Practitioner certification",
+          ].map((item, i) => (
+            <span key={i} className="text-[11px] tracking-wide" style={{ color: "rgba(255,255,255,0.28)", letterSpacing: "0.3px" }}>
+              {item}
+            </span>
+          ))}
+        </div>
+
       </div>
       </div>
     </div>
