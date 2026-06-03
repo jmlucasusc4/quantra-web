@@ -6,7 +6,7 @@
 body {
   background-color: #00050f;
   background-image:
-    linear-gradient(180deg, rgba(0,3,12,0.55) 0%, rgba(0,3,12,0.3) 40%, rgba(0,3,12,0.55) 100%),
+    linear-gradient(180deg, rgba(0,3,12,0.25) 0%, rgba(0,3,12,0.1) 45%, rgba(0,3,12,0.3) 100%),
     url('/earthrise.png');
   background-size: cover;
   background-position: center 40%;

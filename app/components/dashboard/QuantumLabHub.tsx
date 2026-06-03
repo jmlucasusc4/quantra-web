@@ -429,27 +429,12 @@ export function QuantumLabHub() {
   return (
     <div className="relative min-h-screen overflow-x-hidden">
 
-      {/* ── Space background ── */}
-      <div className="fixed inset-0 -z-10"
-        style={{
-          backgroundImage: "url('/earthrise.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center 40%",
-          backgroundRepeat: "no-repeat",
-        }}>
-        {/* Overlay — darkens top/bottom, lets Earth + moon surface breathe through */}
-        <div className="absolute inset-0"
-          style={{
-            background: "linear-gradient(180deg, rgba(0,3,12,0.55) 0%, rgba(0,3,12,0.3) 40%, rgba(0,3,12,0.5) 100%)",
-          }}/>
-      </div>
-
-      {/* ── Glassmorphism foreground panel ── */}
+      {/* ── Glassmorphism foreground panel — body handles the earthrise bg ── */}
       <div className="relative min-h-screen"
         style={{
-          background: "rgba(15,23,42,0.72)",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
+          background: "rgba(5,8,20,0.45)",
+          backdropFilter: "blur(6px)",
+          WebkitBackdropFilter: "blur(6px)",
         }}>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
