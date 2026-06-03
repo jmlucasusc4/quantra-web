@@ -29,7 +29,7 @@ const COMPANIES = [
     logo: "🟢",
     hiring: true,
     roles: ["Quantum Hardware Engineer", "Software Engineer (Cirq)", "Research Scientist"],
-    jobsUrl: "https://careers.google.com/jobs/results/?q=quantum+AI",
+    jobsUrl: "https://www.google.com/about/careers/applications/jobs/results/?company=Google&employment_type=FULL_TIME&employment_type=PART_TIME&location=California,%20USA&location=Munich,%20Germany&location=Seattle,%20WA,%20USA&location=Zurich,%20Switzerland&q=quantum&sort_by=relevance&src=Online%2FGoogle%20Website%2FQuantum_AI&utm_campaign=Quantum_AI&utm_medium=Google%20Website&utm_source=online",
     color: "#34d399",
   },
   {
