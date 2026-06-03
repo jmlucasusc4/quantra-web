@@ -167,6 +167,7 @@ export default function EnterprisePage() {
         <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <Link href="/paths"    style={{ fontSize: 12, color: '#6b5e8c', textDecoration: 'none' }}>Paths</Link>
           <Link href="/standards" style={{ fontSize: 12, color: '#6b5e8c', textDecoration: 'none' }}>Standards</Link>
+          <Link href="/careers"  style={{ fontSize: 12, color: '#6b5e8c', textDecoration: 'none' }}>Careers</Link>
           <a href="#contact" style={{ fontSize: 12, color: '#fff', background: 'linear-gradient(135deg,#7c3aed,#6d28d9)', padding: '7px 18px', borderRadius: 8, textDecoration: 'none', fontWeight: 500 }}>
             Contact Sales
           </a>

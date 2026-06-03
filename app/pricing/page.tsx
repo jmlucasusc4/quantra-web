@@ -274,7 +274,7 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
 
         {/* CTA */}
         {err && <p className="text-red-400 text-xs mb-2 text-center">{err}</p>}
-        <button onClick={handleCta} disabled={busy || (isPaid && authLoading)}
+        <button onClick={handleCta} disabled={busy}
           className="block w-full text-center py-2.5 rounded-xl font-semibold text-sm mb-6 transition-all cursor-pointer disabled:opacity-50"
           style={
             plan.ctaStyle === "primary"
@@ -283,7 +283,7 @@ function PlanCard({ plan, yearly }: { plan: Plan; yearly: boolean }) {
               ? { background: "rgba(52,211,153,0.15)", color: "#34d399", border: "1px solid rgba(52,211,153,0.4)" }
               : { background: "rgba(255,255,255,0.08)", color: "#fff", border: "1px solid rgba(255,255,255,0.15)" }
           }>
-          {isPaid && authLoading ? "Loading…" : busy ? "Redirecting…" : plan.ctaLabel}
+          {busy ? "Redirecting…" : plan.ctaLabel}
         </button>
 
         {/* Feature sections */}
@@ -328,7 +328,7 @@ export default function PricingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#07050f", color: "#e2d9f3" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "transparent", color: "#e2d9f3" }}>
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-white/5 backdrop-blur-xl" style={{ background: "rgba(7,5,15,0.92)" }}>
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -340,7 +340,11 @@ export default function PricingPage() {
             {!authLoading && (
               user ? (
                 <>
-                  <span className="text-white/40 text-xs hidden sm:block">{user.email}</span>
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hidden sm:flex shrink-0"
+                    style={{ background: "rgba(124,58,237,0.35)", border: "1px solid rgba(167,139,250,0.3)", color: "#c4b5fd" }}
+                    title={user.email ?? ""}>
+                    {(user.email ?? "?")[0].toUpperCase()}
+                  </div>
                   <Link href="/"
                     className="text-white/60 hover:text-white transition-colors">
                     Dashboard
@@ -353,6 +357,7 @@ export default function PricingPage() {
                 </>
               ) : (
                 <>
+                  <Link href="/careers" className="text-white/50 hover:text-white transition-colors hidden sm:block">Careers</Link>
                   <Link href="/login" className="text-white/50 hover:text-white transition-colors">Log in</Link>
                   <Link href="/signup" className="px-4 py-1.5 rounded-lg font-semibold text-white"
                     style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)" }}>

@@ -6,11 +6,25 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Quantra — Quantum Algorithm Playground",
-  description: "Interactive quantum algorithm simulations: Grover's search, Shor's factoring, BB84 QKD, and more.",
+  title: "Quantra — Quantum Security Simulations",
+  description: "Hands-on quantum computing simulations for security engineers and enterprise teams. Learn CRYSTALS-Kyber, BB84 QKD, Shor's algorithm, and NIST PQC standards — all in your browser. No install required.",
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
+  },
+  openGraph: {
+    title: "Quantra — Quantum Security Simulations",
+    description: "Browser-based quantum simulations for security engineers. CRYSTALS-Kyber, Shor's algorithm, BB84 QKD — NIST FIPS 203/204 aligned.",
+    url: "https://quantra.space",
+    siteName: "Quantra",
+    images: [{ url: "https://quantra.space/api/og", width: 1200, height: 630, alt: "Quantra Quantum Security Simulations" }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Quantra — Quantum Security Simulations",
+    description: "Browser-based quantum simulations. No install. NIST PQC aligned.",
+    images: ["https://quantra.space/api/og"],
   },
 };
 

@@ -32,6 +32,27 @@ const AUDIENCES = [
   },
 ];
 
+const TESTIMONIALS = [
+  {
+    quote: "The CRYSTALS-Kyber simulation finally made lattice-based cryptography click for me. Better than any whitepaper I've read.",
+    role: "Security Architect",
+    org: "Fortune 500 Financial Services",
+    initials: "M.R.",
+  },
+  {
+    quote: "I ran the Risk Auditor before our CISO review and mapped our entire cryptographic inventory in an afternoon. Saved weeks of prep.",
+    role: "Senior Security Engineer",
+    org: "Healthcare Technology",
+    initials: "J.L.",
+  },
+  {
+    quote: "My team went through the PQC path in a day. Now they can actually speak to quantum risk in client conversations.",
+    role: "Head of Security",
+    org: "B2B SaaS",
+    initials: "A.T.",
+  },
+];
+
 const FEATURES = [
   {
     icon: "⚛️",
@@ -162,6 +183,32 @@ export function LandingPage() {
                 style={{ background: "linear-gradient(135deg,rgba(124,58,237,0.4),rgba(79,70,229,0.4))", border: "1px solid rgba(124,58,237,0.35)", color: "#c4b5fd" }}>
                 {a.cta} →
               </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Testimonials ── */}
+      <section className="max-w-5xl mx-auto px-4 pb-16 w-full">
+        <p className="text-xs font-bold tracking-widest uppercase text-center mb-6" style={{ color: "rgba(255,255,255,0.25)" }}>
+          What beta users are saying
+        </p>
+        <div className="grid sm:grid-cols-3 gap-4">
+          {TESTIMONIALS.map(t => (
+            <div key={t.initials} className="glass p-5 flex flex-col gap-4">
+              <p className="text-sm leading-relaxed flex-1" style={{ color: "rgba(255,255,255,0.65)" }}>
+                &ldquo;{t.quote}&rdquo;
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                  style={{ background: "rgba(124,58,237,0.35)", border: "1px solid rgba(167,139,250,0.3)", color: "#c4b5fd" }}>
+                  {t.initials}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-white/70">{t.role}</p>
+                  <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.3)" }}>{t.org}</p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
