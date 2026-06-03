@@ -79,7 +79,7 @@ export function LandingPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/careers"
-              className="text-sm text-white/60 hover:text-white transition-colors hidden sm:block">
+              className="text-sm text-white/60 hover:text-white transition-colors">
               Careers
             </Link>
             <Link href="/pricing"

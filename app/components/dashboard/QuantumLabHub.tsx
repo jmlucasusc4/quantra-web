@@ -451,7 +451,7 @@ export function QuantumLabHub() {
             </div>
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/careers" className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Careers</Link>
+              <Link href="/careers" className="text-xs text-white/50 hover:text-white transition-colors">Careers</Link>
               <Link href="/paths"   className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Paths</Link>
               <Link href="/pricing" className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Pricing</Link>
               <Link href="/pricing"
