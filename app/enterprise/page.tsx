@@ -80,7 +80,7 @@ const SECTORS = [
   'Financial Services', 'Defense & Government', 'Healthcare', 'Critical Infrastructure', 'Technology', 'Legal & Professional Services',
 ]
 
-const INPUT_STYLE = { background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 8, color: '#e2d9f3', padding: '11px 14px', fontSize: 13, outline: 'none', width: '100%' } as const
+const INPUT_STYLE = { background: 'rgba(13,11,26,0.82)', border: '1px solid #2a2450', borderRadius: 8, color: '#e2d9f3', padding: '11px 14px', fontSize: 13, outline: 'none', width: '100%' } as const
 
 function ContactForm() {
   const [status, setStatus]   = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
@@ -156,7 +156,7 @@ function ContactForm() {
 
 export default function EnterprisePage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#07050f', fontFamily: 'system-ui, sans-serif', color: '#e2d9f3' }}>
+    <div style={{ minHeight: '100vh', background: 'transparent', fontFamily: 'system-ui, sans-serif', color: '#e2d9f3' }}>
 
       {/* Nav */}
       <nav style={{ borderBottom: '1px solid #1a1630', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'rgba(7,5,15,0.92)', backdropFilter: 'blur(12px)', zIndex: 10 }}>
@@ -196,14 +196,14 @@ export default function EnterprisePage() {
       </section>
 
       {/* Urgency */}
-      <section style={{ background: '#0a0818', borderTop: '1px solid #1a1630', borderBottom: '1px solid #1a1630', padding: '48px 24px' }}>
+      <section style={{ background: 'rgba(5,4,15,0.7)', borderTop: '1px solid #1a1630', borderBottom: '1px solid #1a1630', padding: '48px 24px' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <div style={{ fontSize: 11, letterSpacing: '.15em', textTransform: 'uppercase', color: '#f87171', marginBottom: 24, fontWeight: 600, textAlign: 'center' }}>
             The Window Is Closing
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
             {PAIN_POINTS.map(p => (
-              <div key={p.title} style={{ background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 14, padding: '24px 22px' }}>
+              <div key={p.title} style={{ background: 'rgba(13,11,26,0.82)', border: '1px solid #2a2450', borderRadius: 14, padding: '24px 22px' }}>
                 <div style={{ fontSize: 24, marginBottom: 10 }}>{p.icon}</div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#f0ebff', marginBottom: 8 }}>{p.title}</div>
                 <div style={{ fontSize: 12, color: '#6b5e8c', lineHeight: 1.65 }}>{p.desc}</div>
@@ -229,7 +229,7 @@ export default function EnterprisePage() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {TRACKS.map(track => (
-            <div key={track.role} style={{ background: '#0d0b1a', border: `1px solid #2a2450`, borderLeft: `3px solid ${track.color}`, borderRadius: 16, padding: '28px 28px' }}>
+            <div key={track.role} style={{ background: 'rgba(13,11,26,0.82)', border: `1px solid #2a2450`, borderLeft: `3px solid ${track.color}`, borderRadius: 16, padding: '28px 28px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 10, fontWeight: 600, color: track.color, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8 }}>
@@ -261,7 +261,7 @@ export default function EnterprisePage() {
       </section>
 
       {/* Differentiators */}
-      <section style={{ background: '#0a0818', borderTop: '1px solid #1a1630', borderBottom: '1px solid #1a1630', padding: '64px 24px' }}>
+      <section style={{ background: 'rgba(5,4,15,0.7)', borderTop: '1px solid #1a1630', borderBottom: '1px solid #1a1630', padding: '64px 24px' }}>
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <h2 style={{ fontSize: 24, fontWeight: 700, color: '#f0ebff', marginBottom: 12 }}>
@@ -273,7 +273,7 @@ export default function EnterprisePage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
             {DIFFERENTIATORS.map(d => (
-              <div key={d.title} style={{ background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 14, padding: '22px 20px' }}>
+              <div key={d.title} style={{ background: 'rgba(13,11,26,0.82)', border: '1px solid #2a2450', borderRadius: 14, padding: '22px 20px' }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#c4b5fd', marginBottom: 8 }}>{d.title}</div>
                 <div style={{ fontSize: 12, color: '#6b5e8c', lineHeight: 1.65 }}>{d.desc}</div>
               </div>
@@ -289,7 +289,7 @@ export default function EnterprisePage() {
         </div>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 16 }}>
           {SECTORS.map(s => (
-            <span key={s} style={{ fontSize: 12, color: '#a89bc2', background: '#0d0b1a', border: '1px solid #2a2450', padding: '6px 16px', borderRadius: 99 }}>
+            <span key={s} style={{ fontSize: 12, color: '#a89bc2', background: 'rgba(13,11,26,0.82)', border: '1px solid #2a2450', padding: '6px 16px', borderRadius: 99 }}>
               {s}
             </span>
           ))}
@@ -298,7 +298,7 @@ export default function EnterprisePage() {
       </section>
 
       {/* Contact form */}
-      <section id="contact" style={{ background: '#0a0818', borderTop: '1px solid #1a1630', padding: '64px 24px' }}>
+      <section id="contact" style={{ background: 'rgba(5,4,15,0.7)', borderTop: '1px solid #1a1630', padding: '64px 24px' }}>
         <div style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
           <div style={{ fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: '#d4af6a', marginBottom: 12, fontWeight: 600 }}>
             Get Started

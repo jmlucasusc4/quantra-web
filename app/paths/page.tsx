@@ -17,7 +17,7 @@ const TIER_LABEL: Record<string, string> = {
 
 export default function PathsPage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#07050f', fontFamily: 'system-ui, sans-serif', color: '#e2d9f3' }}>
+    <div style={{ minHeight: '100vh', background: 'transparent', fontFamily: 'system-ui, sans-serif', color: '#e2d9f3' }}>
 
       {/* Nav */}
       <nav style={{ borderBottom: '1px solid #1a1630', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'rgba(7,5,15,0.90)', backdropFilter: 'blur(12px)', zIndex: 10 }}>
@@ -54,7 +54,7 @@ export default function PathsPage() {
           {PATHS.map(path => (
             <Link key={path.id} href={`/paths/${path.id}`} style={{ textDecoration: 'none' }}>
               <div style={{
-                background: '#0d0b1a',
+                background: 'rgba(13,11,26,0.82)',
                 border: `1px solid #2a2450`,
                 borderLeft: `3px solid ${path.color}`,
                 borderRadius: 16,
@@ -111,7 +111,7 @@ export default function PathsPage() {
           ))}
         </div>
 
-        <div style={{ marginTop: 48, padding: '24px 28px', background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 16 }}>
+        <div style={{ marginTop: 48, padding: '24px 28px', background: 'rgba(13,11,26,0.82)', border: '1px solid #2a2450', borderRadius: 16 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: '#c4b5fd', marginBottom: 6 }}>Enterprise &amp; Team Training</div>
           <p style={{ fontSize: 13, color: '#6b5e8c', lineHeight: 1.6, marginBottom: 16 }}>
             Need custom paths mapped to your organization&apos;s cryptographic inventory and compliance requirements?

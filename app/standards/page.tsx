@@ -112,7 +112,7 @@ const RELATED_DEMOS = [
 
 export default function StandardsPage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#07050f', fontFamily: 'system-ui, sans-serif', color: '#e2d9f3' }}>
+    <div style={{ minHeight: '100vh', background: 'transparent', fontFamily: 'system-ui, sans-serif', color: '#e2d9f3' }}>
 
       {/* Nav */}
       <nav style={{ borderBottom: '1px solid #1a1630', padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'rgba(7,5,15,0.90)', backdropFilter: 'blur(12px)', zIndex: 10 }}>
@@ -154,7 +154,7 @@ export default function StandardsPage() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {FINALIZED.map(s => (
-              <div key={s.id} style={{ background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 14, padding: '20px 24px' }}>
+              <div key={s.id} style={{ background: 'rgba(13,11,26,0.82)', border: '1px solid #2a2450', borderRadius: 14, padding: '20px 24px' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
@@ -210,7 +210,7 @@ export default function StandardsPage() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {IN_PROGRESS.map(s => (
-              <div key={s.id} style={{ background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 14, padding: '20px 24px' }}>
+              <div key={s.id} style={{ background: 'rgba(13,11,26,0.82)', border: '1px solid #2a2450', borderRadius: 14, padding: '20px 24px' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
@@ -250,7 +250,7 @@ export default function StandardsPage() {
             {DEADLINES.map(d => (
               <div key={d.year} style={{
                 flex: 1, minWidth: 200,
-                background: '#0d0b1a',
+                background: 'rgba(13,11,26,0.82)',
                 border: `1px solid ${d.urgent ? 'rgba(248,113,113,0.30)' : '#2a2450'}`,
                 borderRadius: 14, padding: '20px 20px',
               }}>
@@ -272,7 +272,7 @@ export default function StandardsPage() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {PUBLICATIONS.map(p => (
-              <div key={p.id} style={{ background: '#0d0b1a', border: '1px solid #2a2450', borderRadius: 10, padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <div key={p.id} style={{ background: 'rgba(13,11,26,0.82)', border: '1px solid #2a2450', borderRadius: 10, padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
                 <div>
                   <span style={{ fontSize: 11, fontWeight: 700, color: '#d4af6a', fontFamily: 'ui-monospace, monospace', marginRight: 10 }}>{p.id}</span>
                   <span style={{ fontSize: 12, color: '#c4b5fd' }}>{p.name}</span>
@@ -298,7 +298,7 @@ export default function StandardsPage() {
             {RELATED_DEMOS.map(d => (
               <Link key={d.href} href={d.href} style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                background: '#0d0b1a', border: '1px solid #2a2450',
+                background: 'rgba(13,11,26,0.82)', border: '1px solid #2a2450',
                 borderRadius: 10, padding: '10px 16px', textDecoration: 'none',
               }}>
                 <span style={{ fontSize: 9, fontFamily: 'ui-monospace, monospace', color: '#d4af6a', background: '#1a1630', padding: '2px 6px', borderRadius: 4 }}>{d.standard}</span>
