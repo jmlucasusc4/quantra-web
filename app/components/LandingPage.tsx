@@ -78,6 +78,10 @@ export function LandingPage() {
             <span className="font-bold text-lg tracking-tight text-white">Quantra</span>
           </div>
           <div className="flex items-center gap-3">
+            <Link href="/careers"
+              className="text-sm text-white/60 hover:text-white transition-colors hidden sm:block">
+              Careers
+            </Link>
             <Link href="/pricing"
               className="text-sm text-white/60 hover:text-white transition-colors hidden sm:block">
               Pricing
@@ -253,6 +257,7 @@ export function LandingPage() {
       <footer className="text-center py-6 text-xs border-t border-white/5"
         style={{ color: "rgba(255,255,255,0.2)" }}>
         <div className="flex justify-center gap-6 mb-2">
+          <Link href="/careers" className="hover:text-white/60 transition-colors">Careers</Link>
           <Link href="/pricing" className="hover:text-white/60 transition-colors">Pricing</Link>
           <Link href="/login"   className="hover:text-white/60 transition-colors">Log in</Link>
           <Link href="/signup"  className="hover:text-white/60 transition-colors">Sign up</Link>

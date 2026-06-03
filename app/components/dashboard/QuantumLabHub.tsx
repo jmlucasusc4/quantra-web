@@ -440,13 +440,25 @@ export function QuantumLabHub() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
           {/* Logo + Header */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-3">
             <Image src="/quantra-mark.png" alt="Quantra" width={53} height={40} priority />
             <div>
               <h1 className="text-white font-black text-2xl sm:text-3xl tracking-wider leading-none">
                 QUANTUM LAB HUBS
               </h1>
               <div className="mt-1 h-px w-24" style={{ background: "linear-gradient(90deg,#7c3aed,transparent)" }}/>
+            </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <Link href="/careers" className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Careers</Link>
+              <Link href="/paths"   className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Paths</Link>
+              <Link href="/pricing" className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Pricing</Link>
+              <Link href="/pricing"
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg text-white"
+                style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>
+                Upgrade Pro
+              </Link>
             </div>
           </div>
 

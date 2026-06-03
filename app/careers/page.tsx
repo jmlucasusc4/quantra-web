@@ -170,6 +170,7 @@ export default function CareersPage() {
             <Link href="/hub"     className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Lab Hub</Link>
             <Link href="/paths"   className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Paths</Link>
             <Link href="/pricing" className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Pricing</Link>
+            <Link href="/careers" className="text-xs font-semibold text-purple-300 hidden sm:block">Careers</Link>
             <Link href="/signup"
               className="text-xs font-semibold px-3 py-1.5 rounded-lg text-white"
               style={{ background: "linear-gradient(135deg,#7c3aed,#4f46e5)" }}>
