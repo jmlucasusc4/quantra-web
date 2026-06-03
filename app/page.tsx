@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { DemoSidebar } from "./components/sidebar/DemoSidebar";
 import { QuantumTooltip } from "./components/ui/QuantumTooltip";
+import { LandingPage } from "./components/LandingPage";
 
 // Auto-wrap known quantum terms in a string with tooltips
 const TOOLTIP_TERMS = [
@@ -238,7 +239,17 @@ function HomeInner() {
     </div>
   );
 
+  // Logged-in users go straight to the hub
+  if (user && !initialDemo) {
+    router.replace("/hub");
+    return null;
+  }
+
   const isGuest = !user;
+
+  // Guests see the marketing landing page
+  if (isGuest) return <LandingPage />;
+
   const algo = ALGORITHMS.find(a => a.key === selected)!;
   const AlgoComponent = algo.component;
 
@@ -273,7 +284,11 @@ function HomeInner() {
                 <button onClick={() => router.push("/standards")} className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">Standards</button>
                 <button onClick={() => router.push("/dashboard")} className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">Dashboard</button>
                 <button onClick={() => router.push("/enterprise")} className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">Enterprise</button>
-                <span className="text-xs text-white/30 hidden sm:block">{user!.email}</span>
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold hidden sm:flex shrink-0"
+                  style={{ background: "rgba(124,58,237,0.35)", border: "1px solid rgba(167,139,250,0.3)", color: "#c4b5fd" }}
+                  title={user!.email ?? ""}>
+                  {(user!.email ?? "?")[0].toUpperCase()}
+                </div>
                 <button onClick={() => logout().then(() => router.push("/login"))} className="text-xs text-white/40 hover:text-white transition-colors cursor-pointer">Log out</button>
               </>
             )}

@@ -3,9 +3,33 @@ import Image from "next/image";
 import Link from "next/link";
 
 const STATS = [
-  { value: "16", label: "Interactive Simulations" },
+  { value: "20+", label: "Interactive Simulations" },
   { value: "NIST", label: "PQC Aligned (FIPS 203/204)" },
-  { value: "0", label: "Install Required" },
+  { value: "0",   label: "Install Required" },
+];
+
+const AUDIENCES = [
+  {
+    icon: "🎓",
+    title: "Students & Developers",
+    desc: "Learn quantum computing by running real algorithms in your browser. Superposition, entanglement, Grover's search — no physics PhD required.",
+    cta: "Start Free",
+    href: "/signup",
+  },
+  {
+    icon: "🔒",
+    title: "Security Engineers",
+    desc: "Audit your cryptographic stack, simulate quantum attacks on RSA, and build a CBOM — before your auditor asks for one.",
+    cta: "See Security Tools",
+    href: "/signup",
+  },
+  {
+    icon: "🏢",
+    title: "Enterprise Teams",
+    desc: "NIST-aligned training paths, compliance readiness assessments, and team dashboards. Built for organizations migrating to post-quantum standards.",
+    cta: "Contact Enterprise",
+    href: "/enterprise",
+  },
 ];
 
 const FEATURES = [
@@ -79,15 +103,15 @@ export function LandingPage() {
         </div>
 
         <h1 className="text-4xl sm:text-5xl font-bold text-white leading-tight max-w-2xl mb-4">
-          Master Quantum Computing.<br />
+          Understand Quantum Threats<br />
           <span style={{ background: "linear-gradient(90deg,#a78bfa,#60a5fa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            Secure the Future.
+            Before They Understand You.
           </span>
         </h1>
 
         <p className="text-base sm:text-lg max-w-xl mb-4" style={{ color: "rgba(255,255,255,0.55)" }}>
-          Interactive quantum algorithm simulations for developers and security professionals.
-          Get PQC-ready before your next compliance audit.
+          Hands-on quantum computing simulations for students, security engineers, and enterprise teams.
+          From Bloch spheres to CRYSTALS-Kyber — everything runs in your browser.
         </p>
 
         {/* Trust bar — UX Auditor recommendation #2 */}
@@ -115,6 +139,25 @@ export function LandingPage() {
             <div key={s.label} className="text-center">
               <div className="text-2xl font-bold text-white">{s.value}</div>
               <div className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Audiences ── */}
+      <section className="max-w-5xl mx-auto px-4 pb-16 w-full">
+        <div className="grid sm:grid-cols-3 gap-4">
+          {AUDIENCES.map(a => (
+            <div key={a.title} className="glass p-6 flex flex-col gap-3"
+              style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="text-3xl">{a.icon}</div>
+              <h3 className="font-bold text-white text-sm">{a.title}</h3>
+              <p className="text-xs leading-relaxed flex-1" style={{ color: "rgba(255,255,255,0.5)" }}>{a.desc}</p>
+              <Link href={a.href}
+                className="text-xs font-semibold px-4 py-2 rounded-lg text-center transition-all hover:opacity-90"
+                style={{ background: "linear-gradient(135deg,rgba(124,58,237,0.4),rgba(79,70,229,0.4))", border: "1px solid rgba(124,58,237,0.35)", color: "#c4b5fd" }}>
+                {a.cta} →
+              </Link>
             </div>
           ))}
         </div>
@@ -161,7 +204,7 @@ export function LandingPage() {
 
       {/* ── Algorithm preview ── */}
       <section className="max-w-5xl mx-auto px-4 pb-20 w-full">
-        <h2 className="text-xl font-bold text-white mb-2 text-center">16 Simulations. One Platform.</h2>
+        <h2 className="text-xl font-bold text-white mb-2 text-center">20+ Simulations. One Platform.</h2>
         <p className="text-sm text-center mb-8" style={{ color: "rgba(255,255,255,0.4)" }}>
           From quantum fundamentals to NIST-standardized PQC algorithms.
         </p>
