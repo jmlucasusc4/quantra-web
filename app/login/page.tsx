@@ -21,7 +21,7 @@ export default function LoginPage() {
     setError(""); setLoading(true);
     try {
       await login(email, password);
-      router.push("/");
+      router.push("/hub");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Login failed.");
     }

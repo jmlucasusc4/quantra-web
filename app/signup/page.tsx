@@ -57,7 +57,7 @@ export default function SignUpPage() {
           updatedAt: Date.now(),
         });
       }
-      router.push("/");
+      router.push("/hub");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Sign up failed.");
     }
