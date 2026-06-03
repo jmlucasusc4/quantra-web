@@ -20,7 +20,7 @@ const COMPANIES = [
     logo: "🔷",
     hiring: true,
     roles: ["Quantum Systems Engineer", "PQC Security Architect", "Research Scientist"],
-    jobsUrl: "https://www.ibm.com/quantum/careers",
+    jobsUrl: "https://careers.ibm.com/",
     color: "#818cf8",
   },
   {
@@ -29,7 +29,7 @@ const COMPANIES = [
     logo: "🟢",
     hiring: true,
     roles: ["Quantum Hardware Engineer", "Software Engineer (Cirq)", "Research Scientist"],
-    jobsUrl: "https://quantumai.google/careers",
+    jobsUrl: "https://careers.google.com/jobs/results/?q=quantum+AI",
     color: "#34d399",
   },
   {
@@ -146,8 +146,8 @@ const ROLES = [
 ];
 
 const BOARDS = [
-  { name: "Quantum Computing Jobs", url: "https://quantumcomputingjobs.com", desc: "Niche board dedicated to quantum roles" },
-  { name: "Q-NEXT Job Board",       url: "https://qnext.org/careers",         desc: "DOE National Quantum Initiative jobs" },
+  { name: "Quantum Computing Report Jobs", url: "https://quantumcomputingreport.com/jobs/", desc: "Curated quantum industry job listings" },
+  { name: "QED-C Job Board",              url: "https://quantumconsortium.org/jobs/",      desc: "Quantum Economic Development Consortium" },
   { name: "LinkedIn — Quantum",     url: "https://linkedin.com/jobs/quantum-computing-jobs", desc: "Filter by 'quantum computing' keyword" },
   { name: "USAJOBS — Cryptography", url: "https://www.usajobs.gov/Search/Results?k=cryptography", desc: "Federal cryptography and quantum roles" },
 ];
