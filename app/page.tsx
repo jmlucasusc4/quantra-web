@@ -274,12 +274,14 @@ function HomeInner() {
           <div className="flex items-center gap-4">
             {isGuest ? (
               <>
+                <Link href="/careers" className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Careers</Link>
                 <Link href="/pricing" className="text-xs text-white/50 hover:text-white transition-colors hidden sm:block">Pricing</Link>
                 <Link href="/login"   className="text-xs text-white/50 hover:text-white transition-colors">Log in</Link>
                 <Link href="/signup"  className="text-xs font-semibold px-3 py-1.5 rounded-lg text-white" style={{ background: "linear-gradient(135deg,#7c3aed,#6d28d9)" }}>Sign up free</Link>
               </>
             ) : (
               <>
+                <button onClick={() => router.push("/careers")}   className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">Careers</button>
                 <button onClick={() => router.push("/paths")}     className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">Paths</button>
                 <button onClick={() => router.push("/standards")} className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">Standards</button>
                 <button onClick={() => router.push("/dashboard")} className="text-xs text-white/50 hover:text-white transition-colors cursor-pointer hidden sm:block">Dashboard</button>

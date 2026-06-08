@@ -9,6 +9,7 @@ const TABS = [
   { label: 'Dashboard', icon: '◎', href: '/dashboard' },
   { label: 'Progress',  icon: '◈', href: '/dashboard' },
   { label: 'Pricing',   icon: '✦', href: '/pricing' },
+  { label: 'Careers',   icon: '◉', href: '/careers' },
 ]
 
 export function MobileTabNav() {
