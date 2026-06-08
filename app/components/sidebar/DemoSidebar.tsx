@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { useSubscription } from '@/hooks/useSubscription'
 import { useProgress } from '@/hooks/useProgress'
+import { DemoThumbnail } from './DemoThumbnail'
 
 interface Demo {
   slug: string
@@ -208,12 +209,7 @@ function DemoItem({
       onMouseEnter={e => { if (!locked && !active) e.currentTarget.style.background = '#110e24' }}
       onMouseLeave={e => { if (!active) e.currentTarget.style.background = 'transparent' }}
     >
-      {/* Completion dot */}
-      <div style={{
-        width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-        background: complete ? '#10b981' : '#1a1630',
-        border: complete ? 'none' : '1px solid #2a2450',
-      }} />
+      <DemoThumbnail slug={demo.slug} locked={locked} complete={complete} />
 
       <span style={{ fontSize: 12, color: locked ? '#3a3060' : '#c4b8e8', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {demo.name}
